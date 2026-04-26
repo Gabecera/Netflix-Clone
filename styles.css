@@ -13,6 +13,8 @@ body {
         width: 150px;
         height: 200px;
         background: gray;
+        object-fit: cover;
+        border-radius: 4px;
     }
 
     /* move inline style here (from previous edit). This is to make sure all css is here*/
