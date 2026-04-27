@@ -54,7 +54,8 @@ body {
         background-position: center;
         display: flex;
         align-items: center;
-        padding: 40px;
+        justify-content: flex-start;;
+        padding-left: 40px;
     }
 
     .hero-content {
