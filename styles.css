@@ -24,3 +24,41 @@ body {
     .logo {
         color: red;
     }
+
+    .hero {
+        height: 500px;
+        background-image: linear-gradient(to right, #111, transparent),
+            url("https://image.tmdb.org/t/p/original/x2LSRK2Cm7MZhjluni1msVJ3wDF.jpg");
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: center;
+        padding: 40px;
+    }
+
+    .hero-content {
+        max-width: 500px;
+    }
+
+    .hero h1 {
+        font-size: 50px;
+        margin-bottom: 10px;
+    }
+
+    .hero p {
+        margin-bottom: 20px;
+        line-height: 1.4;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        margin-right: 10px;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .btn-secondary {
+        background: gray;
+        color: white;
+    }
