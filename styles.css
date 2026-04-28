@@ -18,6 +18,10 @@ body {
         background: #111;
         z-index: 100; /* keeps nav bar above everything */
     }
+    /* makes sure all elements have consistent box sizing */
+    * {
+        box-sizing: border-box;
+    }
     /* Components */
     .row {
         display: flex;
@@ -58,7 +62,7 @@ body {
         background-position: center;
         display: flex;
         align-items: center;
-        justify-content: flex-start;;
+        justify-content: flex-start;
         padding-left: 40px;
     }
 
