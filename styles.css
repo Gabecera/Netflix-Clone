@@ -109,6 +109,13 @@ body {
         justify-content: center;
         align-items: center;
         z-index: 200; /* above nav bar */
+        backdrop-filter: blur(5px); /* blur background */
+        opacity: 0; /* start invisible for fade-in effect */
+        transition: opacity 0.3s ease; /* smooth fade-in */
+    }
+    .modal.show {
+        display: flex; /* show modal */
+        opacity: 1; /* fade in */
     }
     /* modal content box */
     .modal-content {
@@ -117,6 +124,7 @@ body {
         border-radius: 8px;
         text-align: center;
         position: relative;
+        width: 400px;
     }
     /* */
     .modal-content img {

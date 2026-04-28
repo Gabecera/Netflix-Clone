@@ -25,3 +25,17 @@ movies.forEach(function(movie) {
 closeModal.addEventListener("click", function() {
     modal.style.display = "none";
 });
+
+// when you click outside the modal content, hide the modal
+window.addEventListener("click", function(event) {
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
+});
+
+const modalDescription = document.getElementById("modalDescription");
+
+modalDescription.textContent = "This is a great movie!";
+
+modal.classList.add("show");
+modal.classList.remove("show");
