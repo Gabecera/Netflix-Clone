@@ -25,7 +25,10 @@ body {
         overflow-x: scroll; /* able to scroll horizontally */
         padding: 20px;
     }
-
+    .row-title {
+        margin-left: 20px;
+        margin-top: 30px;
+    }
     .row::-webkit-scrollbar {
         display: none; /* hide scrollbar. Only for Chrome, Safari, and Edge. Not Firefox */
     }
@@ -36,6 +39,7 @@ body {
         object-fit: cover;
         border-radius: 4px;
         flex-shrink: 0; /* prevent shrinking when container is too small( when window is resized */
+        transition: transform 0.3s ease; /* smooth scaling effect */
     }
     .movie:hover {
         transform: scale(1.1);
@@ -73,11 +77,16 @@ body {
     }
 /* add Buttons and makes sure .btn is white button with black lettering */
     .btn {
-        padding: 10px 20px;
+        padding: 10px 24px;
         margin-right: 10px;
         border: none;
         cursor: pointer;
         font-weight: bold;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+    .btn:hover {
+        opacity: 0.8; /* slightly transparent on hover */
     }
 /* .btn-secondary is gray button with white lettering */
     .btn-secondary {
