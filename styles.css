@@ -144,7 +144,8 @@ outline: none;
 }
 /*adding modal css */
 .modal {
-    display: none; /* hidden by default */
+    display: flex; /* hidden by default */
+    visibility: hidden;
     position: fixed;
     top: 0;
     left: 0;
@@ -156,11 +157,11 @@ outline: none;
     z-index: 200; /* above nav bar */
     backdrop-filter: blur(5px); /* blur background */
     opacity: 0; /* start invisible for fade-in effect */
-    transition: opacity 0.3s ease; /* smooth fade-in */
+    transition: opacity 0.3s ease, visibility 0.3s ease; /* smooth fade-in */
 }
 .modal.show {
-    display: flex; /* show modal */
     opacity: 1; /* fade in */
+    visibility: visible;
 }
 /* modal content box */
 .modal-content {
@@ -171,7 +172,7 @@ outline: none;
     position: relative;
     width: 600px;
 }
-/* */
+
 .modal-content img {
     width: 200px;
     border-radius: 5px;
@@ -183,4 +184,64 @@ outline: none;
     right: 15px;
     font-size: 28px;
     cursor: pointer;
+}
+/*for mobile */
+@media (max-width: 600px) {
+    /* shrink hero text */
+    .hero h1 {
+        font-size: 28px;
+    }
+
+    .hero p {
+        font-size: 14px;
+    }
+
+    /* stack buttons vertically */
+    .hero-content {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .btn {
+        width: 100%;
+        text-align: center;
+        margin-right: 0;
+    }
+
+    /* shrink hero height */
+    .hero {
+        height: 350px;
+        padding-left: 20px;
+    }
+
+    /* shrink nav logo */
+    .logo {
+        font-size: 20px;
+    }
+
+    /* shrink search bar */
+    #searchInput {
+        width: 120px;
+        font-size: 12px;
+    }
+
+    /* shrink movie posters */
+    .movie {
+        width: 100px;
+        height: 140px;
+    }
+
+    /* shrink modal */
+    .modal-content {
+        width: 95%;
+        padding: 15px;
+    }
+
+    /* shrink trailer */
+    #modalTrailer {
+        width: 100%;
+        height: 200px;
+    }
 }

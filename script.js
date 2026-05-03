@@ -60,12 +60,41 @@ const myListRow = document.getElementById("myListRow");
 
 function renderMyList() {
     myListRow.innerHTML = "";
-    myList.forEach(function(movie) {
+
+    if (myList.length === 0) {
+        document.querySelector(".my-list-title").style.display = "none";
+        return;
+    }
+
+    document.querySelector(".my-list-title").style.display = "block";
+
+    myList.forEach(function(movieItem, index) {
+        // create wrapper
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("movie-wrapper");
+
+        // create image
         const img = document.createElement("img");
-        img.src = movie.src;
-        img.alt = movie.alt;
+        img.src = movieItem.src;
+        img.alt = movieItem.alt;
         img.classList.add("movie");
-        myListRow.appendChild(img);
+
+        // create remove button
+        const removeBtn = document.createElement("button");
+        removeBtn.classList.add("add-btn");
+        removeBtn.textContent = "✕";
+
+        // remove from list when clicked
+        removeBtn.addEventListener("click", function(e) {
+            e.stopPropagation();
+            myList.splice(index, 1);
+            localStorage.setItem("myList", JSON.stringify(myList));
+            renderMyList();
+        });
+
+        wrapper.appendChild(img);
+        wrapper.appendChild(removeBtn);
+        myListRow.appendChild(wrapper);
     });
 }
 
