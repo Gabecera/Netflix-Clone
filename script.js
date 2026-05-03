@@ -158,4 +158,31 @@ window.addEventListener("click", function(event) {
         modalTrailer.src = ""; // stops the video
     }
 });
+document.querySelectorAll(".movie-wrapper").forEach(function(wrapper) {
+    const img = wrapper.querySelector(".movie");
+    const data = movieData[img.alt];
 
+    if (data && data.trailer) {
+        const container = document.createElement("div");
+        container.classList.add("video-container");
+        container.style.display = "none";
+
+        const video = document.createElement("iframe");
+        video.src = "";
+        video.style.border = "none";
+        container.appendChild(video);
+        wrapper.appendChild(container);
+
+        wrapper.addEventListener("mouseenter", function() {
+            video.src = `https://www.youtube.com/embed/${data.trailer}?autoplay=1&mute=1&controls=0&modestbranding=1`;
+            container.style.display = "block";
+            img.style.visibility = "hidden";
+        });
+
+        wrapper.addEventListener("mouseleave", function() {
+            video.src = "";
+            container.style.display = "none";
+            img.style.visibility = "visible";
+        });
+    }
+});
