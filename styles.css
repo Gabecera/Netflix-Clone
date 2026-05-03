@@ -87,9 +87,6 @@ outline: none;
 .movie-wrapper:hover .add-btn {
     display: flex;
 }
-.movie:hover {
-    transform: scale(1.1);
-}
 /* move inline style here (from previous edit). This is to make sure all css is here*/
 /* Text */
 .logo {
