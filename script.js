@@ -113,7 +113,17 @@ document.querySelectorAll(".add-btn").forEach(function(btn) {
         }
     });
 });
+const searchIcon = document.getElementById("searchIcon");
 const searchInput = document.getElementById("searchInput");
+
+searchIcon.addEventListener("click", function() {
+    searchInput.classList.toggle("hidden");
+    searchInput.classList.toggle("visible");
+    if (searchInput.classList.contains("visible")) {
+        searchInput.focus();
+    }
+});
+
 
 searchInput.addEventListener("input", function() {
     const query = searchInput.value.toLowerCase();
@@ -185,4 +195,16 @@ document.querySelectorAll(".movie-wrapper").forEach(function(wrapper) {
             img.style.visibility = "visible";
         });
     }
+});
+// dropdown menu functionality
+const browseBtn = document.querySelector(".browse-dropdown");
+const dropdownMenu = document.querySelector(".dropdown-menu");
+
+browseBtn.addEventListener("click", function(e) {
+    e.stopPropagation();
+    dropdownMenu.classList.toggle("open");
+});
+
+window.addEventListener("click", function() {
+    dropdownMenu.classList.remove("open");
 });

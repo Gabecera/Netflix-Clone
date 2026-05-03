@@ -19,6 +19,50 @@ nav {
     background: #111;
     z-index: 100; /* keeps nav bar above everything */
 }
+.dropdown-menu {
+    display: none;
+}
+/* dropdown menu hidden by default (desktop) */
+.browse-dropdown {
+    display: none;
+    position: relative;
+    cursor: pointer;
+    font-size: 14px;
+    color: white;
+}
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto; /* push search bar to the right */
+}
+/* nav links update */
+.nav-links {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding-left: 20px;
+    gap: 20px;
+}
+.nav-links li {
+    font-size: 14px;
+    cursor: pointer;
+    color: white;
+    white-space: nowrap; /* prevent wrapping on small screens */
+}
+.nav-links li:hover {
+    color: gray;
+}
+#searchIcon {
+    cursor: pointer;
+    font-size: 18px;
+}
+#searchInput.hidden {
+    display: none;
+}
+#searchInput.visible {
+    display: block;
+}
 /* search input style */
 #searchInput {
 background: transparent;
@@ -208,7 +252,43 @@ outline: none;
     border: none;
 }
 /*for mobile */
-@media (max-width: 600px) {
+@media (max-width: 950px) {
+    .desktop-links {
+        display: none;
+    }
+    .browse-dropdown {
+        display: block;
+        position: relative;
+        cursor: pointer;
+        font-size: 14px;
+        color: white;
+        padding-left: 10px;
+    }
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 40px;
+        left: 0;
+        background: rgba(0, 0, 0, 0.9);
+        border: 1px solid rgba(255,255,255,0.2);
+        list-style: none;
+        padding: 10px 0;
+        margin: 0;
+        width: 200px;
+        border-radius: 4px;
+        z-index: 300;
+    }
+    .dropdown-menu li {
+    padding: 10px 20px;
+    font-size: 14px;
+    color: white;
+    }
+    .dropdown-menu li:hover {
+    background: rgba(255,255,255,0.1);
+    }
+    .dropdown-menu.open {
+    display: block;
+    }
     /* shrink hero text */
     .hero h1 {
         font-size: 28px;
