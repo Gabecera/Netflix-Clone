@@ -483,7 +483,67 @@ footer {
     overflow: hidden;
     margin: 0 auto;
 }
+.hover-card {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 220px;
+    background: #181818;
+    border-radius: 0 0 6px 6px;
+    padding: 10px;
+    z-index: 50;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.8);
+}
 
+.movie-wrapper:hover .hover-card {
+    display: block;
+}
+
+.hover-card-title {
+    font-size: 13px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 6px;
+}
+
+.hover-card-stars {
+    color: gold;
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+
+.hover-card-genres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.genre-tag {
+    background: #333;
+    color: #ccc;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 20px;
+}
+
+.hover-add-btn {
+    width: 100%;
+    background: transparent;
+    border: 1px solid white;
+    color: white;
+    padding: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.hover-add-btn:hover {
+    background: white;
+    color: black;
+}
 .modal-video-container iframe {
     position: absolute;
     top: -40px;
