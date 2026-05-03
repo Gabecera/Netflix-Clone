@@ -8,6 +8,7 @@
 
     <nav>
         <h1 class="logo">NETFLIX</h1>
+        <input type="text" id="searchInput" placeholder="Search movies...">
     </nav>
 
     <header class="hero">
@@ -76,11 +77,9 @@
     <div id="movieModal" class="modal">
         <div class="modal-content">
             <span id="closeModal" class="close">&times;</span>
-            <img id="modalImage" src="" alt="">
+            <iframe id="modalTrailer" width="560" height="315" frameborder="0" allowfullscreen></iframe>
             <h2 id="modalTitle"></h2>
-
             <p id="modalDescription"></p>
-
             <button class="btn">Play</button>
         </div>
     </div>
