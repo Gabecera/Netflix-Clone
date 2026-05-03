@@ -55,6 +55,20 @@ const movieData = {
         trailer: "Way9Dexny3w" // this is the YouTube video ID
     }
 };
+const muteBtn = document.getElementById("muteBtn");
+const heroVideo = document.getElementById("heroVideo");
+let isMuted = true;
+
+muteBtn.addEventListener("click", function() {
+    isMuted = !isMuted;
+    if (isMuted) {
+        heroVideo.src = heroVideo.src.replace("mute=0", "mute=1");
+        muteBtn.textContent = "🔇";
+    } else {
+        heroVideo.src = heroVideo.src.replace("mute=1", "mute=0");
+        muteBtn.textContent = "🔊";
+    }
+});
 const myList = JSON.parse(localStorage.getItem("myList")) || [];
 const myListRow = document.getElementById("myListRow");
 
