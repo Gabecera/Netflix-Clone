@@ -55,7 +55,35 @@ const movieData = {
         trailer: "Way9Dexny3w" // this is the YouTube video ID
     }
 };
+const myList = JSON.parse(localStorage.getItem("myList")) || [];
+const myListRow = document.getElementById("myListRow");
 
+function renderMyList() {
+    myListRow.innerHTML = "";
+    myList.forEach(function(movie) {
+        const img = document.createElement("img");
+        img.src = movie.src;
+        img.alt = movie.alt;
+        img.classList.add("movie");
+        myListRow.appendChild(img);
+    });
+}
+
+renderMyList();
+
+document.querySelectorAll(".add-btn").forEach(function(btn) {
+    btn.addEventListener("click", function(e) {
+        e.stopPropagation(); // prevents modal from opening
+        const img = btn.previousElementSibling;
+        const already = myList.find(m => m.alt === img.alt);
+        if (!already) {
+            myList.push({ src: img.src, alt: img.alt });
+            localStorage.setItem("myList", JSON.stringify(myList));
+            btn.textContent = "✓";
+            renderMyList();
+        }
+    });
+});
 const searchInput = document.getElementById("searchInput");
 
 searchInput.addEventListener("input", function() {

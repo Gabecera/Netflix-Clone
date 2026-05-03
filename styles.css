@@ -14,6 +14,7 @@ nav {
     height: 70px;
     display: flex;
     align-items: center;
+    justify-content: space-between; /* put search bar on right */
     padding: 0 40px;
     background: #111;
     z-index: 100; /* keeps nav bar above everything */
@@ -60,6 +61,30 @@ outline: none;
     flex-shrink: 0; /* prevent shrinking when container is too small( when window is resized */
     transition: transform 0.3s ease; /* smooth scaling effect */
 }
+.movie-wrapper {
+    position: relative;
+    flex-shrink: 0; /* prevent shrinking when container is too small( when window is resized */
+}
+.movie-wrapper .add-btn {
+    position: absolute;
+    bottom: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.7);
+    color: white;
+    border: 1px solid white;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    font-size: 18px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+.movie-wrapper:hover .add-btn {
+    display: flex;
+}
 .movie:hover {
     transform: scale(1.1);
 }
@@ -103,13 +128,18 @@ outline: none;
     font-weight: bold;
     border-radius: 4px;
     font-size: 16px;
+    background: white;        /* add this */
+    color: black;             /* add this */
+    display: inline-flex;     /* add this */
+    align-items: center;      /* add this */
+    gap: 8px;                 /* add this */
 }
 .btn:hover {
     opacity: 0.8; /* slightly transparent on hover */
 }
 /* .btn-secondary is gray button with white lettering */
 .btn-secondary {
-    background: gray;
+    background: rgba(109, 109, 110, 0.7);
     color: white;
 }
 /*adding modal css */
