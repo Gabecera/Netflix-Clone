@@ -6,6 +6,9 @@ body {
         color: white;
         font-family: Arial;
     }
+.logo-link {
+    text-decoration: none;
+}
 /* makes navigation fixed at top of page */
 nav {
     position: fixed;
@@ -87,7 +90,9 @@ outline: none;
     display: flex;
     gap: 10px;
     overflow-x: scroll; /* able to scroll horizontally */
+    overflow-y: visible;
     padding: 20px;
+    padding-bottom: 70px;
 }
 .row-title {
     margin-left: 20px;
@@ -105,11 +110,52 @@ outline: none;
     flex-shrink: 0; /* prevent shrinking when container is too small( when window is resized */
     transition: transform 0.3s ease; /* smooth scaling effect */
 }
+.info-bar {
+    display: none;
+    position: absolute;
+    bottom: -70px;
+    left: 0;
+    width: 100%;
+    background: #181818;
+    padding: 8px;
+    border-radius: 0 0 4px 4px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    z-index: 9999;
+}
+
+.info-title {
+    font-size: 11px;
+    color: white;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.info-add-btn {
+    background: transparent;
+    color: white;
+    border: 1px solid white;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.info-add-btn:hover {
+    background: white;
+    color: black;
+}
 .movie-wrapper {
     position: relative;
     flex-shrink: 0; /* prevent shrinking when container is too small( when window is resized */
     width: 150px;
     height: 200px;
+    overflow: visible
 }
 .movie-wrapper .add-btn {
     position: absolute;
@@ -127,6 +173,8 @@ outline: none;
     display: none;
     align-items: center;
     justify-content: center;
+    z-index: 30;
+    pointer-events: all;
 }
 .movie-wrapper:hover .add-btn {
     display: flex;
@@ -282,15 +330,55 @@ outline: none;
     height: 100%;
     overflow: hidden;
     border-radius: 4px;
+    z-index: 1;
+    pointer-events: none;
 }
 
 .video-container iframe {
     position: absolute;
     top: -30px;
-    left: 0;
-    width: 100%;
-    height: calc(100% + 60px);
+    left: -2px;
+    width: calc(100% + 4px);
+    height: calc(100% + 80px);
     border: none;
+}
+footer {
+    padding: 40px;
+    margin-top: 40px;
+    color: gray;
+}
+
+.footer-logo {
+    color: gray;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.footer-links {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.footer-links a {
+    color: gray;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
+.footer-copy {
+    font-size: 12px;
+    color: gray;
+    margin-top: 20px;
+}
+#modalTrailer {
+    display: none;
 }
 /*for mobile */
 @media (max-width: 950px) {
@@ -387,4 +475,20 @@ outline: none;
         width: 100%;
         height: 200px;
     }
+}
+.modal-video-container {
+    position: relative;
+    width: 560px;
+    height: 315px;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+.modal-video-container iframe {
+    position: absolute;
+    top: -40px;
+    left: -2px;
+    width: calc(100% + 4px);
+    height: calc(100% + 80px);
+    border: none;
 }

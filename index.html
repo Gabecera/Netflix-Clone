@@ -7,7 +7,9 @@
 <body>
 
     <nav>
-        <h1 class="logo">NETFLIX</h1>
+        <a href="index.html" class="logo-link">
+            <h1 class="logo">NETFLIX</h1>
+        </a>
         <ul class="nav-links desktop-links">
             <li>Home</li>
             <li>Shows</li>
@@ -44,7 +46,7 @@
             </iframe>
         </div>
         <div class="hero-content">
-            <h1>Stranger Things</h1>
+            <h1>Stranger Things 3</h1>
             <p>When a young boy disappears, his friends uncover a mystery involving secret experiments.</p>
             <button class="btn">&#9654; Play</button>
             <button class="btn btn-secondary">More Info</button>
@@ -208,7 +210,10 @@
     <div id="movieModal" class="modal">
         <div class="modal-content">
             <span id="closeModal" class="close">&times;</span>
-            <iframe id="modalTrailer" width="560" height="315" frameborder="0" allowfullscreen></iframe>
+            <div class="modal-video-container">
+                <iframe id="modalTrailer" frameborder="0" allowfullscreen></iframe>
+            </div>
+
             <h2 id="modalTitle"></h2>
             <p id="modalDescription"></p>
             <button class="btn">Play</button>
@@ -217,4 +222,22 @@
 
     <script src="script.js"></script>
 </body>
+<footer>
+    <div class="footer-logo">NETFLIX</div>
+    <div class="footer-links">
+        <a href="#">FAQ</a>
+        <a href="#">Help Centre</a>
+        <a href="#">Account</a>
+        <a href="#">Media Centre</a>
+        <a href="#">Investor Relations</a>
+        <a href="#">Jobs</a>
+        <a href="#">Ways to Watch</a>
+        <a href="#">Terms of Use</a>
+        <a href="#">Privacy</a>
+        <a href="#">Cookie Preferences</a>
+        <a href="#">Corporate Information</a>
+        <a href="#">Contact Us</a>
+    </div>
+    <p class="footer-copy">© 2024 Netflix Clone. All rights reserved.</p>
+</footer>
 </html>
