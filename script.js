@@ -224,6 +224,34 @@ searchIcon.addEventListener("click", function() {
     }
 });
 
+window.addEventListener("scroll", function() {
+    const nav = document.querySelector("nav");
+    if (window.scrollY > 50) {
+        nav.classList.add("scrolled");
+    } else {
+        nav.classList.remove("scrolled");
+    }
+});
+
+document.querySelectorAll(".row-container").forEach(function(container) {
+    const row = container.querySelector(".row");
+    const leftArrow = container.querySelector(".arrow-left");
+    const rightArrow = container.querySelector(".arrow-right");
+
+    rightArrow.addEventListener("click", function() {
+        row.scrollBy({ left: 500, behavior: "smooth" });
+    });
+
+    leftArrow.addEventListener("click", function() {
+        row.scrollBy({ left: -500, behavior: "smooth" });
+    });
+});
+
+row.addEventListener("scroll", function() {
+    leftArrow.style.opacity = row.scrollLeft > 0 ? "1" : "0";
+    rightArrow.style.opacity = 
+        row.scrollLeft < row.scrollWidth - row.clientWidth ? "1" : "0";
+});
 
 searchInput.addEventListener("input", function() {
     const query = searchInput.value.toLowerCase();
