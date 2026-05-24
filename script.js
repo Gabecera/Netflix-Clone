@@ -8,6 +8,14 @@ const modalTitle = document.getElementById("modalTitle");
 const closeModal = document.getElementById("closeModal");
 //modal description for movie
 const modalDescription = document.getElementById("modalDescription");
+// get api
+const OMDB_KEY = "701853b4";
+
+fetch(`https://www.omdbapi.com/?t=Avengers+Infinity+War&apikey=${OMDB_KEY}`)
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+    });
 // movie data with descriptions
 const movieData = {
     "Avengers Infinity War": {
@@ -258,17 +266,14 @@ function buildHoverCard(wrapper, img, data) {
     card.classList.add("hover-card");
 
     const title = document.createElement("div");
-    searchInput.addEventListener("input", function() {
-    const query = searchInput.value.toLowerCase();
+    title.classList.add("hover-card-title");
+    title.textContent = img.alt;
 
-    movies.forEach(function(movie) {
-        if (movie.alt.toLowerCase().includes(query)) {
-            movie.closest(".movie-wrapper").style.display = "flex";
-        } else {
-            movie.closest(".movie-wrapper").style.display = "none";
-        }
-    });
-});
+    const stars = document.createElement("div");
+    stars.classList.add("hover-card-stars");
+    const rating = data.rating || 3;
+    stars.textContent = "★".repeat(rating) + "☆".repeat(5 - rating);
+
     const genreRow = document.createElement("div");
     genreRow.classList.add("hover-card-genres");
     (data.genres || []).forEach(g => {
@@ -304,8 +309,18 @@ function buildHoverCard(wrapper, img, data) {
     card.appendChild(genreRow);
     card.appendChild(addBtn);
     wrapper.appendChild(card);
-}
+} // end of buildHoverCard
+searchInput.addEventListener("input", function() {
+    const query = searchInput.value.toLowerCase();
 
+    movies.forEach(function(movie) {
+        if (movie.alt.toLowerCase().includes(query)) {
+            movie.closest(".movie-wrapper").style.display = "flex";
+        } else {
+            movie.closest(".movie-wrapper").style.display = "none";
+        }
+    });
+});
 document.querySelectorAll(".movie-wrapper").forEach(function(wrapper) {
     const img = wrapper.querySelector(".movie");
     const data = movieData[img.alt];
@@ -351,4 +366,23 @@ browseBtn.addEventListener("click", function(e) {
 
 window.addEventListener("click", function() {
     dropdownMenu.classList.remove("open");
+});
+const modalTrailer = document.getElementById("modalTrailer");
+
+movies.forEach(function(movie) {
+    movie.addEventListener("click", function() {
+        heroVideo.src = heroVideo.src.replace("autoplay=1", "autoplay=0");
+        modal.classList.add("show");
+        modalTitle.textContent = movie.alt;
+        const data = movieData[movie.alt];
+        modalDescription.textContent = data ? data.description : "No description available.";
+        if (data && data.trailer) {
+            modalTrailer.src = `https://www.youtube.com/embed/${data.trailer}?autoplay=1&mute=1`;
+        }
+    });
+});
+
+closeModal.addEventListener("click", function() {
+    modal.classList.remove("show");
+    modalTrailer.src = "";
 });
