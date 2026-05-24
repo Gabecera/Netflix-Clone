@@ -245,60 +245,71 @@ document.querySelectorAll(".row-container").forEach(function(container) {
     leftArrow.addEventListener("click", function() {
         row.scrollBy({ left: -500, behavior: "smooth" });
     });
-});
 
-row.addEventListener("scroll", function() {
-    leftArrow.style.opacity = row.scrollLeft > 0 ? "1" : "0";
-    rightArrow.style.opacity = 
-        row.scrollLeft < row.scrollWidth - row.clientWidth ? "1" : "0";
-});
-
-searchInput.addEventListener("input", function() {
-    const query = searchInput.value.toLowerCase();
-
-    movies.forEach(function(movie) {
-        if (movie.alt.toLowerCase().includes(query)) {
-            movie.style.display = "block";
-        } else {
-            movie.style.display = "none";
-        }
-    });
-});
-// loops through every movie
-const modalTrailer = document.getElementById("modalTrailer");
-
-movies.forEach(function(movie) {
-    movie.addEventListener("click", function() {
-        // pause hero
-        heroVideo.src = heroVideo.src.replace("autoplay=1", "autoplay=0");
-
-        modal.classList.add("show");
-        modalTitle.textContent = movie.alt;
-        const data = movieData[movie.alt];
-        modalDescription.textContent = data ? data.description : "No description available.";
-        if (data && data.trailer) {
-            modalTrailer.src = `https://www.youtube.com/embed/${data.trailer}?autoplay=1&mute=1`;
-        } else {
-            modalTrailer.src = "";
-        }
+    row.addEventListener("scroll", function() {
+        leftArrow.style.opacity = row.scrollLeft > 0 ? "1" : "0";
+        rightArrow.style.opacity =
+            row.scrollLeft < row.scrollWidth - row.clientWidth ? "1" : "0";
     });
 });
 
-// when you click the close button, hide the modal
-closeModal.addEventListener("click", function() {
-    modal.classList.remove("show");
-    modalTrailer.src = ""; // stops the video
-});
+function buildHoverCard(wrapper, img, data) {
+    const card = document.createElement("div");
+    card.classList.add("hover-card");
 
-window.addEventListener("click", function(event) {
-    if (event.target === modal) {
-        modal.classList.remove("show");
-        modalTrailer.src = ""; // stops the video
-    }
-});
+    const title = document.createElement("div");
+    title.classList.add("hover-card-title");
+    title.textContent = img.alt;
+
+    const stars = document.createElement("div");
+    stars.classList.add("hover-card-stars");
+    const rating = data.rating || 3;
+    stars.textContent = "★".repeat(rating) + "☆".repeat(5 - rating);
+
+    const genreRow = document.createElement("div");
+    genreRow.classList.add("hover-card-genres");
+    (data.genres || []).forEach(g => {
+        const tag = document.createElement("span");
+        tag.classList.add("genre-tag");
+        tag.textContent = g;
+        genreRow.appendChild(tag);
+    });
+
+    const addBtn = document.createElement("button");
+    addBtn.classList.add("hover-add-btn");
+    const already = myList.find(m => m.alt === img.alt);
+    addBtn.textContent = already ? "✓ In My List" : "+ My List";
+
+    addBtn.addEventListener("click", function(e) {
+        e.stopPropagation();
+        const inList = myList.find(m => m.alt === img.alt);
+        if (!inList) {
+            myList.push({ src: img.src, alt: img.alt });
+            localStorage.setItem("myList", JSON.stringify(myList));
+            addBtn.textContent = "✓ In My List";
+        } else {
+            const idx = myList.findIndex(m => m.alt === img.alt);
+            myList.splice(idx, 1);
+            localStorage.setItem("myList", JSON.stringify(myList));
+            addBtn.textContent = "+ My List";
+        }
+        renderMyList();
+    });
+
+    card.appendChild(title);
+    card.appendChild(stars);
+    card.appendChild(genreRow);
+    card.appendChild(addBtn);
+    wrapper.appendChild(card);
+}
+
 document.querySelectorAll(".movie-wrapper").forEach(function(wrapper) {
     const img = wrapper.querySelector(".movie");
     const data = movieData[img.alt];
+
+    if (data) {
+        buildHoverCard(wrapper, img, data);
+    }
 
     if (data && data.trailer) {
         const container = document.createElement("div");
@@ -325,69 +336,6 @@ document.querySelectorAll(".movie-wrapper").forEach(function(wrapper) {
             heroVideo.src = `https://www.youtube.com/embed/6Am4v0C_z8c?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&controls=0&modestbranding=1&playlist=6Am4v0C_z8c`;
         });
     }
-    function buildHoverCard(wrapper, img, data) {
-    const card = document.createElement("div");
-    card.classList.add("hover-card");
-
-    // title
-    const title = document.createElement("div");
-    title.classList.add("hover-card-title");
-    title.textContent = img.alt;
-
-    // stars
-    const stars = document.createElement("div");
-    stars.classList.add("hover-card-stars");
-    const rating = data.rating || 3;
-    stars.textContent = "★".repeat(rating) + "☆".repeat(5 - rating);
-
-    // genre tags
-    const genreRow = document.createElement("div");
-    genreRow.classList.add("hover-card-genres");
-    (data.genres || []).forEach(g => {
-        const tag = document.createElement("span");
-        tag.classList.add("genre-tag");
-        tag.textContent = g;
-        genreRow.appendChild(tag);
-    });
-
-    // add/remove button
-    const addBtn = document.createElement("button");
-    addBtn.classList.add("hover-add-btn");
-    const already = myList.find(m => m.alt === img.alt);
-    addBtn.textContent = already ? "✓ In My List" : "+ My List";
-
-    addBtn.addEventListener("click", function(e) {
-        e.stopPropagation();
-        const inList = myList.find(m => m.alt === img.alt);
-        if (!inList) {
-            myList.push({ src: img.src, alt: img.alt });
-            localStorage.setItem("myList", JSON.stringify(myList));
-            addBtn.textContent = "✓ In My List";
-        } else {
-            const idx = myList.findIndex(m => m.alt === img.alt);
-            myList.splice(idx, 1);
-            localStorage.setItem("myList", JSON.stringify(myList));
-            addBtn.textContent = "+ My List";
-        }
-        renderMyList();
-        });
-
-        card.appendChild(title);
-        card.appendChild(stars);
-        card.appendChild(genreRow);
-        card.appendChild(addBtn);
-        wrapper.appendChild(card);
-        document.querySelectorAll(".movie-wrapper").forEach(function(wrapper) {
-        const img = wrapper.querySelector(".movie");
-        const data = movieData[img.alt];
-
-        if (data) {
-            buildHoverCard(wrapper, img, data);  // ← add this line
-        }
-
-        // ... rest of your existing hover video code
-});
-}
 });
 // dropdown menu functionality
 const browseBtn = document.querySelector(".browse-dropdown");

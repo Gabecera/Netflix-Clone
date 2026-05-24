@@ -409,9 +409,7 @@ footer {
     color: gray;
     margin-top: 20px;
 }
-#modalTrailer {
-    display: none;
-}
+
 /*for mobile */
 @media (max-width: 950px) {
     .desktop-links {
