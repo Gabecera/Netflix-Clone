@@ -258,14 +258,17 @@ function buildHoverCard(wrapper, img, data) {
     card.classList.add("hover-card");
 
     const title = document.createElement("div");
-    title.classList.add("hover-card-title");
-    title.textContent = img.alt;
+    searchInput.addEventListener("input", function() {
+    const query = searchInput.value.toLowerCase();
 
-    const stars = document.createElement("div");
-    stars.classList.add("hover-card-stars");
-    const rating = data.rating || 3;
-    stars.textContent = "★".repeat(rating) + "☆".repeat(5 - rating);
-
+    movies.forEach(function(movie) {
+        if (movie.alt.toLowerCase().includes(query)) {
+            movie.closest(".movie-wrapper").style.display = "flex";
+        } else {
+            movie.closest(".movie-wrapper").style.display = "none";
+        }
+    });
+});
     const genreRow = document.createElement("div");
     genreRow.classList.add("hover-card-genres");
     (data.genres || []).forEach(g => {
