@@ -1,199 +1,150 @@
-// stores all imgs in list
-const movies = document.querySelectorAll(".movie");
-//targets popup modal elements
-const modal = document.getElementById("movieModal");
-//get movie name in popup modal
-const modalTitle = document.getElementById("modalTitle");
-//get close button in popup modal
-const closeModal = document.getElementById("closeModal");
-//modal description for movie
-const modalDescription = document.getElementById("modalDescription");
-// get api
+// =====================
+// OMDb API
+// =====================
 const OMDB_KEY = "701853b4";
 
-fetch(`https://www.omdbapi.com/?t=Avengers+Infinity+War&apikey=${OMDB_KEY}`)
-    .then(response => response.json())
-    .then(data => {
-        console.log(data);
-    });
-// movie data with descriptions
-const movieData = {
-    "Avengers Infinity War": {
-        description: "The Avengers and their allies must be willing to sacrifice all in an attempt to defeat the powerful Thanos before his blitz of devastation and ruin puts an end to the universe.",
-        trailer: "6ZfuNTqbHE8",
-        rating: 4,
-        genres: ["Action", "Sci-Fi"]
-    },
-    "Doctor Strange in the Multiverse of Madness": {
-        description: "Doctor Strange teams up with a mysterious teenager who can travel between multiverses to face a powerful enemy determined to harness the power of the Multiverse.",
-        trailer: "aWzlQ2N6qqg",
-        rating: 3,
-        genres: ["Action", "Fantasy", "Horror"]
-    },
-    "Stranger Things 3": {
-        description: "When the Mind Flayer returns to Hawkins, Eleven and her friends discover a secret Russian lab beneath the new Starcourt Mall that threatens their town and the world.",
-        trailer: "e4XvO7DItmc",
-        rating: 5,
-        genres: ["Thriller", "Sci-Fi", "Drama"]
-    },
-    "Bullet Train": {
-        description: "Five assassins aboard a fast-moving bullet train in Japan discover their missions are all connected in this action-comedy thriller.",
-        trailer: "0IOsk2Vlc4o",
-        rating: 4,
-        genres: ["Action", "Comedy", "Thriller"]
-    },
-    "Alienoid": {
-        description: "Guards of an alien prison send the imprisoned to the end of the Goryeo period in Korea. A swordsman chases a divine sword and meets a time-traveling girl in an era of chaos.",
-        trailer: "JaRLlh8Pw5A",
-        rating: 3,
-        genres: ["Action", "Sci-Fi", "Fantasy"]
-    },
-    "The Super Mario Bros. Movie": {
-        description: "A plumber named Mario travels through an underground labyrinth with his brother Luigi, trying to save a captured princess and defeat a villainous king.",
-        trailer: "TnGl01FkMMo",
-        rating: 4,
-        genres: ["Animation", "Comedy", "Family"]
-    },
-    "Meg 2": {
-        description: "A research team encounters multiple Megalodons and other threats while on a deep-sea expedition, and must outrun and outsmart these massive prehistoric sharks.",
-        trailer: "dG91B3hHyY4",
-        rating: 3,
-        genres: ["Action", "Sci-Fi", "Horror"]
-    },
-    "The Avengers: Infinity War": {
-        description: "The Avengers and their allies must be willing to sacrifice all in an attempt to defeat the powerful Thanos before his blitz of devastation and ruin puts an end to the universe.",
-        trailer: "6ZfuNTqbHE8",
-        rating: 4,
-        genres: ["Action", "Sci-Fi"]
-    },
-    "Wonder Woman 1984": {
-        description: "Diana Prince must contend with a Cold War-era villain and an old friend turned enemy in the 1980s as her powers are tested to their limits.",
-        trailer: "sfM7_JLk-84",
-        rating: 3,
-        genres: ["Action", "Fantasy", "Adventure"]
-    },
-    "Elemental": {
-        description: "In a city where fire, water, land and air residents live together, a fiery young woman and a go-with-the-flow guy discover something elemental — how much they have in common.",
-        trailer: "hXzcyx9V0xw",
-        rating: 4,
-        genres: ["Animation", "Romance", "Family"]
-    },
-    "Dune Part 2": {
-        description: "Paul Atreides unites with the Fremen people of Arrakis while on a warpath of revenge against the conspirators who destroyed his family, facing a difficult choice between love and the fate of the universe.",
-        trailer: "Way9Dexny3w",
-        rating: 5,
-        genres: ["Sci-Fi", "Adventure", "Drama"]
+// Cache so each movie is only fetched once (protects the 1,000/day limit)
+const omdbCache = {};
+
+async function fetchMovieData(title) {
+    if (omdbCache[title]) return omdbCache[title];
+
+    try {
+        const res = await fetch(`https://www.omdbapi.com/?t=${encodeURIComponent(title)}&apikey=${OMDB_KEY}`);
+        const data = await res.json();
+
+        if (data.Response === "False") {
+            console.warn(`OMDb: "${title}" not found — ${data.Error}`);
+            return null;
+        }
+
+        const parsed = {
+            description: data.Plot || "No description available.",
+            rating: Math.min(5, Math.max(1, Math.round(parseFloat(data.imdbRating) / 2))),
+            genres: data.Genre ? data.Genre.split(", ") : [],
+            trailer: movieTrailers[title] || null
+        };
+
+        omdbCache[title] = parsed;
+        return parsed;
+    } catch (err) {
+        console.error(`OMDb fetch failed for "${title}":`, err);
+        return null;
     }
+}
+
+// =====================
+// Trailers (YouTube IDs — OMDb doesn't provide these)
+// =====================
+const movieTrailers = {
+    "Avengers Infinity War": "6ZfuNTqbHE8",
+    "Doctor Strange in the Multiverse of Madness": "aWzlQ2N6qqg",
+    "Stranger Things 3": "e4XvO7DItmc",
+    "Bullet Train": "0IOsk2Vlc4o",
+    "Alienoid": "JaRLlh8Pw5A",
+    "The Super Mario Bros. Movie": "TnGl01FkMMo",
+    "Meg 2": "dG91B3hHyY4",
+    "The Avengers: Infinity War": "6ZfuNTqbHE8",
+    "Wonder Woman 1984": "sfM7_JLk-84",
+    "Elemental": "hXzcyx9V0xw",
+    "Dune Part 2": "Way9Dexny3w"
 };
-const featured = [
-    {
-        title: "Stranger Things 3",
-        description: "When the Mind Flayer returns to Hawkins, Eleven and her friends discover a secret Russian lab beneath the new Starcourt Mall that threatens their town and the world.",
-        trailer: "6Am4v0C_z8c"
-    },
-    {
-        title: "Dune Part 2",
-        description: "Paul Atreides unites with the Fremen people of Arrakis while on a warpath of revenge against the conspirators who destroyed his family.",
-        trailer: "Way9Dexny3w"
-    },
-    {
-        title: "Bullet Train",
-        description: "Five assassins aboard a fast-moving bullet train in Japan discover their missions are all connected in this action-comedy thriller.",
-        trailer: "0IOsk2Vlc4o"
-    },
-    {
-        title: "Avengers Infinity War",
-        description: "The Avengers and their allies must be willing to sacrifice all in an attempt to defeat the powerful Thanos before his blitz of devastation and ruin puts an end to the universe.",
-        trailer: "6ZfuNTqbHE8"
-    },
-    {
-        title: "Doctor Strange in the Multiverse of Madness",
-        description: "Doctor Strange teams up with a mysterious teenager who can travel between multiverses to face a powerful enemy determined to harness the power of the Multiverse.",
-        trailer: "aWzlQ2N6qqg"
-    },
-    {
-        title: "The Super Mario Bros. Movie",
-        description: "A plumber named Mario travels through an underground labyrinth with his brother Luigi, trying to save a captured princess and defeat a villainous king.",
-        trailer: "TnGl01FkMMo"
-    },
-    {
-        title: "Meg 2",
-        description: "A research team encounters multiple Megalodons and other threats while on a deep-sea expedition, and must outrun and outsmart these massive prehistoric sharks.",
-        trailer: "dG91B3hHyY4"
-    },
-    {
-        title: "Wonder Woman 1984",
-        description: "Diana Prince must contend with a Cold War-era villain and an old friend turned enemy in the 1980s as her powers are tested to their limits.",
-        trailer: "sfM7_JLk-84"
-    },
-    {
-        title: "Elemental",
-        description: "In a city where fire, water, land and air residents live together, a fiery young woman and a go-with-the-flow guy discover something elemental — how much they have in common.",
-        trailer: "hXzcyx9V0xw"
-    }
-];
-let featuredIndex = 0;
+
+// =====================
+// DOM References
+// =====================
+const movies = document.querySelectorAll(".movie");
+const modal = document.getElementById("movieModal");
+const modalTitle = document.getElementById("modalTitle");
+const closeModal = document.getElementById("closeModal");
+const modalDescription = document.getElementById("modalDescription");
+const modalTrailer = document.getElementById("modalTrailer");
+const muteBtn = document.getElementById("muteBtn");
+const heroVideo = document.getElementById("heroVideo");
+const myListRow = document.getElementById("myListRow");
+const searchIcon = document.getElementById("searchIcon");
+const searchInput = document.getElementById("searchInput");
+const browseBtn = document.querySelector(".browse-dropdown");
+const dropdownMenu = document.querySelector(".dropdown-menu");
 const heroTitle = document.querySelector(".hero-content h1");
 const heroDesc = document.querySelector(".hero-content p");
 
-function updateHero() {
+// =====================
+// Hero Rotation
+// =====================
+const featured = [
+    { title: "Stranger Things 3", trailer: "6Am4v0C_z8c" },
+    { title: "Dune Part 2", trailer: "Way9Dexny3w" },
+    { title: "Bullet Train", trailer: "0IOsk2Vlc4o" },
+    { title: "Avengers Infinity War", trailer: "6ZfuNTqbHE8" },
+    { title: "Doctor Strange in the Multiverse of Madness", trailer: "aWzlQ2N6qqg" },
+    { title: "The Super Mario Bros. Movie", trailer: "TnGl01FkMMo" },
+    { title: "Meg 2", trailer: "dG91B3hHyY4" },
+    { title: "Wonder Woman 1984", trailer: "sfM7_JLk-84" },
+    { title: "Elemental", trailer: "hXzcyx9V0xw" }
+];
+let featuredIndex = 0;
+
+async function updateHero() {
     const current = featured[featuredIndex];
     heroTitle.textContent = current.title;
-    heroDesc.textContent = current.description;
-    heroVideo.src = `https://www.youtube.com/embed/${current.trailer}?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&controls=0&modestbranding=1&playlist=${current.trailer}`;
+
+    // Fetch real description from OMDb
+    const data = await fetchMovieData(current.title);
+    heroDesc.textContent = data ? data.description : "";
+
+    heroVideo.src = `https://www.youtube.com/embed/${current.trailer}?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&controls=0&fs=0&modestbranding=1&playlist=${current.trailer}`;
     featuredIndex = (featuredIndex + 1) % featured.length;
 }
 
-// rotate every 30 seconds
+// Load first hero description immediately
+updateHero();
 setInterval(updateHero, 30000);
-let activeVideo = null;
-const muteBtn = document.getElementById("muteBtn");
-const heroVideo = document.getElementById("heroVideo");
 
+// =====================
+// Mute Button
+// =====================
 let isMuted = true;
 muteBtn.textContent = "🔇";
 
-muteBtn.addEventListener("click", function() {
+muteBtn.addEventListener("click", function () {
     isMuted = !isMuted;
-    if (isMuted) {
-        heroVideo.src = heroVideo.src.replace("mute=0", "mute=1");
-        muteBtn.textContent = "🔇";
-    } else {
-        heroVideo.src = heroVideo.src.replace("mute=1", "mute=0");
-        muteBtn.textContent = "🔊";
-    }
+    heroVideo.src = isMuted
+        ? heroVideo.src.replace("mute=0", "mute=1")
+        : heroVideo.src.replace("mute=1", "mute=0");
+    muteBtn.textContent = isMuted ? "🔇" : "🔊";
 });
+
+// =====================
+// My List
+// =====================
 const myList = JSON.parse(localStorage.getItem("myList")) || [];
-const myListRow = document.getElementById("myListRow");
 
 function renderMyList() {
     myListRow.innerHTML = "";
+    const title = document.querySelector(".my-list-title");
 
     if (myList.length === 0) {
-        document.querySelector(".my-list-title").style.display = "none";
+        title.style.display = "none";
         return;
     }
 
-    document.querySelector(".my-list-title").style.display = "block";
+    title.style.display = "block";
 
-    myList.forEach(function(movieItem, index) {
-        // create wrapper
+    myList.forEach(function (movieItem, index) {
         const wrapper = document.createElement("div");
         wrapper.classList.add("movie-wrapper");
 
-        // create image
         const img = document.createElement("img");
         img.src = movieItem.src;
         img.alt = movieItem.alt;
         img.classList.add("movie");
 
-        // create remove button
         const removeBtn = document.createElement("button");
         removeBtn.classList.add("add-btn");
         removeBtn.textContent = "✕";
 
-        // remove from list when clicked
-        removeBtn.addEventListener("click", function(e) {
+        removeBtn.addEventListener("click", function (e) {
             e.stopPropagation();
             myList.splice(index, 1);
             localStorage.setItem("myList", JSON.stringify(myList));
@@ -208,9 +159,9 @@ function renderMyList() {
 
 renderMyList();
 
-document.querySelectorAll(".add-btn").forEach(function(btn) {
-    btn.addEventListener("click", function(e) {
-        e.stopPropagation(); // prevents modal from opening
+document.querySelectorAll(".add-btn").forEach(function (btn) {
+    btn.addEventListener("click", function (e) {
+        e.stopPropagation();
         const img = btn.previousElementSibling;
         const already = myList.find(m => m.alt === img.alt);
         if (!already) {
@@ -221,47 +172,57 @@ document.querySelectorAll(".add-btn").forEach(function(btn) {
         }
     });
 });
-const searchIcon = document.getElementById("searchIcon");
-const searchInput = document.getElementById("searchInput");
 
-searchIcon.addEventListener("click", function() {
+// =====================
+// Search
+// =====================
+searchIcon.addEventListener("click", function () {
     searchInput.classList.toggle("hidden");
     searchInput.classList.toggle("visible");
-    if (searchInput.classList.contains("visible")) {
-        searchInput.focus();
-    }
+    if (searchInput.classList.contains("visible")) searchInput.focus();
 });
 
-window.addEventListener("scroll", function() {
-    const nav = document.querySelector("nav");
-    if (window.scrollY > 50) {
-        nav.classList.add("scrolled");
-    } else {
-        nav.classList.remove("scrolled");
-    }
+searchInput.addEventListener("input", function () {
+    const query = searchInput.value.toLowerCase();
+    movies.forEach(function (movie) {
+        movie.closest(".movie-wrapper").style.display =
+            movie.alt.toLowerCase().includes(query) ? "flex" : "none";
+    });
 });
 
-document.querySelectorAll(".row-container").forEach(function(container) {
+// =====================
+// Scroll — Nav background
+// =====================
+window.addEventListener("scroll", function () {
+    document.querySelector("nav").classList.toggle("scrolled", window.scrollY > 50);
+});
+
+// =====================
+// Row Arrows
+// =====================
+document.querySelectorAll(".row-container").forEach(function (container) {
     const row = container.querySelector(".row");
     const leftArrow = container.querySelector(".arrow-left");
     const rightArrow = container.querySelector(".arrow-right");
 
-    rightArrow.addEventListener("click", function() {
-        row.scrollBy({ left: 500, behavior: "smooth" });
-    });
+    rightArrow.addEventListener("click", () => row.scrollBy({ left: 500, behavior: "smooth" }));
+    leftArrow.addEventListener("click", () => row.scrollBy({ left: -500, behavior: "smooth" }));
 
-    leftArrow.addEventListener("click", function() {
-        row.scrollBy({ left: -500, behavior: "smooth" });
-    });
-
-    row.addEventListener("scroll", function() {
+    row.addEventListener("scroll", function () {
         leftArrow.style.opacity = row.scrollLeft > 0 ? "1" : "0";
         rightArrow.style.opacity =
             row.scrollLeft < row.scrollWidth - row.clientWidth ? "1" : "0";
     });
 });
 
+// =====================
+// Hover Cards (built with live OMDb data)
+// =====================
 function buildHoverCard(wrapper, img, data) {
+    // Remove existing hover card if any
+    const existing = wrapper.querySelector(".hover-card");
+    if (existing) existing.remove();
+
     const card = document.createElement("div");
     card.classList.add("hover-card");
 
@@ -285,10 +246,9 @@ function buildHoverCard(wrapper, img, data) {
 
     const addBtn = document.createElement("button");
     addBtn.classList.add("hover-add-btn");
-    const already = myList.find(m => m.alt === img.alt);
-    addBtn.textContent = already ? "✓ In My List" : "+ My List";
+    addBtn.textContent = myList.find(m => m.alt === img.alt) ? "✓ In My List" : "+ My List";
 
-    addBtn.addEventListener("click", function(e) {
+    addBtn.addEventListener("click", function (e) {
         e.stopPropagation();
         const inList = myList.find(m => m.alt === img.alt);
         if (!inList) {
@@ -296,8 +256,7 @@ function buildHoverCard(wrapper, img, data) {
             localStorage.setItem("myList", JSON.stringify(myList));
             addBtn.textContent = "✓ In My List";
         } else {
-            const idx = myList.findIndex(m => m.alt === img.alt);
-            myList.splice(idx, 1);
+            myList.splice(myList.findIndex(m => m.alt === img.alt), 1);
             localStorage.setItem("myList", JSON.stringify(myList));
             addBtn.textContent = "+ My List";
         }
@@ -309,27 +268,22 @@ function buildHoverCard(wrapper, img, data) {
     card.appendChild(genreRow);
     card.appendChild(addBtn);
     wrapper.appendChild(card);
-} // end of buildHoverCard
-searchInput.addEventListener("input", function() {
-    const query = searchInput.value.toLowerCase();
+}
 
-    movies.forEach(function(movie) {
-        if (movie.alt.toLowerCase().includes(query)) {
-            movie.closest(".movie-wrapper").style.display = "flex";
-        } else {
-            movie.closest(".movie-wrapper").style.display = "none";
-        }
-    });
-});
-document.querySelectorAll(".movie-wrapper").forEach(function(wrapper) {
+// =====================
+// Movie Wrappers — hover video + hover card (OMDb)
+// =====================
+document.querySelectorAll(".movie-wrapper").forEach(async function (wrapper) {
     const img = wrapper.querySelector(".movie");
-    const data = movieData[img.alt];
+    if (!img) return;
 
-    if (data) {
-        buildHoverCard(wrapper, img, data);
-    }
+    // Fetch OMDb data and build hover card
+    const data = await fetchMovieData(img.alt);
+    if (data) buildHoverCard(wrapper, img, data);
 
-    if (data && data.trailer) {
+    // Hover video (trailer)
+    const trailer = movieTrailers[img.alt];
+    if (trailer) {
         const container = document.createElement("div");
         container.classList.add("video-container");
         container.style.display = "none";
@@ -340,49 +294,53 @@ document.querySelectorAll(".movie-wrapper").forEach(function(wrapper) {
         container.appendChild(video);
         wrapper.appendChild(container);
 
-        wrapper.addEventListener("mouseenter", function() {
+        wrapper.addEventListener("mouseenter", function () {
             heroVideo.src = heroVideo.src.replace("mute=0", "mute=1").replace("autoplay=1", "autoplay=0");
-            video.src = `https://www.youtube.com/embed/${data.trailer}?autoplay=1&mute=1&controls=0&modestbranding=1`;
+            video.src = `https://www.youtube.com/embed/${trailer}?autoplay=1&mute=1&controls=0&fs=0&modestbranding=1`;
             container.style.display = "block";
             img.style.visibility = "hidden";
         });
 
-        wrapper.addEventListener("mouseleave", function() {
+        wrapper.addEventListener("mouseleave", function () {
             video.src = "";
             container.style.display = "none";
             img.style.visibility = "visible";
-            heroVideo.src = `https://www.youtube.com/embed/6Am4v0C_z8c?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&controls=0&modestbranding=1&playlist=6Am4v0C_z8c`;
+            heroVideo.src = `https://www.youtube.com/embed/6Am4v0C_z8c?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&controls=0&fs=0&modestbranding=1&playlist=6Am4v0C_z8c`;
         });
     }
 });
-// dropdown menu functionality
-const browseBtn = document.querySelector(".browse-dropdown");
-const dropdownMenu = document.querySelector(".dropdown-menu");
 
-browseBtn.addEventListener("click", function(e) {
+// =====================
+// Dropdown Menu
+// =====================
+browseBtn.addEventListener("click", function (e) {
     e.stopPropagation();
     dropdownMenu.classList.toggle("open");
 });
 
-window.addEventListener("click", function() {
-    dropdownMenu.classList.remove("open");
-});
-const modalTrailer = document.getElementById("modalTrailer");
+window.addEventListener("click", () => dropdownMenu.classList.remove("open"));
 
-movies.forEach(function(movie) {
-    movie.addEventListener("click", function() {
+// =====================
+// Modal (click a movie — loads OMDb description)
+// =====================
+movies.forEach(function (movie) {
+    movie.addEventListener("click", async function () {
         heroVideo.src = heroVideo.src.replace("autoplay=1", "autoplay=0");
         modal.classList.add("show");
         modalTitle.textContent = movie.alt;
-        const data = movieData[movie.alt];
+        modalDescription.textContent = "Loading...";
+
+        const data = await fetchMovieData(movie.alt);
         modalDescription.textContent = data ? data.description : "No description available.";
-        if (data && data.trailer) {
-            modalTrailer.src = `https://www.youtube.com/embed/${data.trailer}?autoplay=1&mute=1`;
+
+        const trailer = movieTrailers[movie.alt];
+        if (trailer) {
+            modalTrailer.src = `https://www.youtube.com/embed/${trailer}?autoplay=1&mute=1`;
         }
     });
 });
 
-closeModal.addEventListener("click", function() {
+closeModal.addEventListener("click", function () {
     modal.classList.remove("show");
     modalTrailer.src = "";
 });
