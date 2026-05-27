@@ -5,6 +5,8 @@ body {
         background: #111;
         color: white;
         font-family: Arial;
+        overflow-x: hidden;
+        overflow-y: visible;
     }
 .logo-link {
     text-decoration: none;
@@ -129,14 +131,15 @@ nav.scrolled {
 .row-scroll { 
     overflow-x: scroll;
     overflow-y: visible; 
-    padding-bottom: 180px; 
+    padding-bottom: 220px; 
 }
 
 .row-container {
     position: relative;
     overflow: visible;
 }
-.row-container::-webkit-scrollbar {
+/* hide scrollbar for all browsers */
+.row-scroll::-webkit-scrollbar {
     display: none;
 }
 /* no longer clips hover cards */
