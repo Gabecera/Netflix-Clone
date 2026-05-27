@@ -92,10 +92,8 @@ nav.scrolled {
 .row {
     display: flex;
     gap: 10px;
-    overflow-x: scroll; /* able to scroll horizontally */
-    overflow-y: visible;
-    padding: 20px;
-    padding-bottom: 70px;
+    overflow: visible;
+    width: max-content;
 }
 .row-title {
     margin-left: 20px;
@@ -127,8 +125,24 @@ nav.scrolled {
     gap: 6px;
     z-index: 9999;
 }
+/* only this scrolls */
+.row-scroll { 
+    overflow-x: scroll;
+    overflow-y: visible; 
+    padding-bottom: 180px; 
+}
+
 .row-container {
     position: relative;
+    overflow: visible;
+}
+.row-container::-webkit-scrollbar {
+    display: none;
+}
+/* no longer clips hover cards */
+.row-outer {
+    overflow: visible;
+    padding: 0;
 }
 
 .arrow {
@@ -582,3 +596,4 @@ footer {
     height: calc(100% + 80px);
     border: none;
 }
+/* expand view of row */
