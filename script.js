@@ -1,11 +1,18 @@
 // =====================
 // OMDb API
 // =====================
+const TMDB_KEY = "d0b65271e62e6564bb47999d30242931";
 const OMDB_KEY = "701853b4";
 
 // Cache so each movie is only fetched once (protects the 1,000/day limit)
 const omdbCache = {};
-
+// check TMDB API 
+async function fetchTMDBRow(endpoint) {
+    const res = await fetch(`https://api.themoviedb.org/3${endpoint}&api_key=${TMDB_KEY}`);
+    const data = await res.json();
+    return data.results || [];
+}
+// check OMDB API for movie details (plot, rating, genres)
 async function fetchMovieData(title) {
     if (omdbCache[title]) return omdbCache[title];
 
@@ -31,6 +38,30 @@ async function fetchMovieData(title) {
         console.error(`OMDb fetch failed for "${title}":`, err);
         return null;
     }
+}
+// Build a row of movies from TMDB data
+function buildRow(movies, rowElement) {
+    rowElement.innerHTML = "";
+    movies.forEach(movie => {
+        if (!movie.poster_path) return;
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("movie-wrapper");
+
+        const img = document.createElement("img");
+        img.src = `https://image.tmdb.org/t/p/w300${movie.poster_path}`;
+        img.alt = movie.title || movie.name;
+        img.classList.add("movie");
+
+        const btn = document.createElement("button");
+        btn.classList.add("add-btn");
+        btn.textContent = "+";
+
+        wrapper.appendChild(img);
+        wrapper.appendChild(btn);
+        rowElement.appendChild(wrapper);
+
+        setupMovieWrapper(wrapper);
+    });
 }
 
 // =====================
@@ -273,15 +304,13 @@ function buildHoverCard(wrapper, img, data) {
 // =====================
 // Movie Wrappers — hover video + hover card (OMDb)
 // =====================
-document.querySelectorAll(".movie-wrapper").forEach(async function (wrapper) {
+async function setupMovieWrapper(wrapper) {
     const img = wrapper.querySelector(".movie");
     if (!img) return;
 
-    // Fetch OMDb data and build hover card
     const data = await fetchMovieData(img.alt);
     if (data) buildHoverCard(wrapper, img, data);
 
-    // Hover video (trailer)
     const trailer = movieTrailers[img.alt];
     if (trailer) {
         const container = document.createElement("div");
@@ -308,7 +337,21 @@ document.querySelectorAll(".movie-wrapper").forEach(async function (wrapper) {
             heroVideo.src = `https://www.youtube.com/embed/6Am4v0C_z8c?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&controls=0&fs=0&modestbranding=1&playlist=6Am4v0C_z8c`;
         });
     }
+    img.addEventListener("click", async function () {
+    heroVideo.src = heroVideo.src.replace("autoplay=1", "autoplay=0");
+    modal.classList.add("show");
+    modalTitle.textContent = img.alt;
+    modalDescription.textContent = "Loading...";
+
+    const data = await fetchMovieData(img.alt);
+    modalDescription.textContent = data ? data.description : "No description available.";
+
+    const trailer = movieTrailers[img.alt];
+    if (trailer) {
+        modalTrailer.src = `https://www.youtube.com/embed/${trailer}?autoplay=1&mute=1`;
+    }
 });
+}
 
 // =====================
 // Dropdown Menu
@@ -323,24 +366,30 @@ window.addEventListener("click", () => dropdownMenu.classList.remove("open"));
 // =====================
 // Modal (click a movie — loads OMDb description)
 // =====================
-movies.forEach(function (movie) {
-    movie.addEventListener("click", async function () {
-        heroVideo.src = heroVideo.src.replace("autoplay=1", "autoplay=0");
-        modal.classList.add("show");
-        modalTitle.textContent = movie.alt;
-        modalDescription.textContent = "Loading...";
 
-        const data = await fetchMovieData(movie.alt);
-        modalDescription.textContent = data ? data.description : "No description available.";
-
-        const trailer = movieTrailers[movie.alt];
-        if (trailer) {
-            modalTrailer.src = `https://www.youtube.com/embed/${trailer}?autoplay=1&mute=1`;
-        }
-    });
-});
 
 closeModal.addEventListener("click", function () {
     modal.classList.remove("show");
     modalTrailer.src = "";
 });
+// call for each row
+async function loadTMDBRows() {
+    const [trending, action, comedy, scifi, popular] = await Promise.all([
+        fetchTMDBRow("/trending/movie/week?language=en-US"),
+        fetchTMDBRow("/discover/movie?with_genres=28&sort_by=popularity.desc"),
+        fetchTMDBRow("/discover/movie?with_genres=35&sort_by=popularity.desc"),
+        fetchTMDBRow("/discover/movie?with_genres=878&sort_by=popularity.desc"),
+        fetchTMDBRow("/movie/popular?language=en-US")
+    ]);
+
+    buildRow(trending, document.querySelectorAll(".row-container .row")[0]);
+    buildRow(action,   document.querySelectorAll(".row-container .row")[1]);
+    buildRow(comedy,   document.querySelectorAll(".row-container .row")[2]);
+    buildRow(scifi,    document.querySelectorAll(".row-container .row")[3]);
+    buildRow(popular,  document.querySelectorAll(".row-container .row")[4]);
+    // at the bottom of buildRow, inside the forEach, after wrapper.appendChild(btn):
+}
+
+loadTMDBRows();
+// for manual hardcoded wrappers
+document.querySelectorAll(".movie-wrapper").forEach(setupMovieWrapper);
