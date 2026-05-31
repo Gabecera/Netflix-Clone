@@ -2,7 +2,7 @@
 // OMDb API
 // =====================
 const TMDB_KEY = "d0b65271e62e6564bb47999d30242931";
-const OMDB_KEY = "701853b4";
+const tmdbCache = {};
 
 // Cache so each movie is only fetched once (protects the 1,000/day limit)
 const omdbCache = {};
@@ -13,29 +13,56 @@ async function fetchTMDBRow(endpoint) {
     return data.results || [];
 }
 // check OMDB API for movie details (plot, rating, genres)
-async function fetchMovieData(title) {
-    if (omdbCache[title]) return omdbCache[title];
+async function fetchMovieData(title, tmdbId = null) {
+    const cacheKey = tmdbId || title;
+    if (tmdbCache[cacheKey]) return tmdbCache[cacheKey];
 
     try {
-        const res = await fetch(`https://www.omdbapi.com/?t=${encodeURIComponent(title)}&apikey=${OMDB_KEY}`);
-        const data = await res.json();
+        let id = tmdbId;
 
-        if (data.Response === "False") {
-            console.warn(`OMDb: "${title}" not found — ${data.Error}`);
-            return null;
+        // If no TMDB ID, search for it by title
+        if (!id) {
+            const searchRes = await fetch(`https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(title)}&api_key=${TMDB_KEY}`);
+            const searchData = await searchRes.json();
+            const result = searchData.results?.[0];
+            if (!result) return null;
+            id = result.id;
+        }
+
+        // Try movie first, then TV
+        let detailsRes = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_KEY}`);
+        let details = await detailsRes.json();
+
+        // If it's not a movie, try TV
+        if (details.status_code === 34) {
+            detailsRes = await fetch(`https://api.themoviedb.org/3/tv/${id}?api_key=${TMDB_KEY}`);
+            details = await detailsRes.json();
+        }
+
+        // Fetch trailer
+        // Try movie videos first, then TV videos
+        let videoRes = await fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${TMDB_KEY}`);
+        let videoData = await videoRes.json();
+        let trailer = videoData.results?.find(v => v.type === "Trailer" && v.site === "YouTube");
+
+        if (!trailer) {
+            videoRes = await fetch(`https://api.themoviedb.org/3/tv/${id}/videos?api_key=${TMDB_KEY}`);
+            videoData = await videoRes.json();
+            trailer = videoData.results?.find(v => v.type === "Trailer" && v.site === "YouTube");
         }
 
         const parsed = {
-            description: data.Plot || "No description available.",
-            rating: Math.min(5, Math.max(1, Math.round(parseFloat(data.imdbRating) / 2))),
-            genres: data.Genre ? data.Genre.split(", ") : [],
-            trailer: movieTrailers[title] || null
+            description: details.overview || "No description available.",
+            rating: Math.min(5, Math.max(1, Math.round(details.vote_average / 2))),
+            genres: details.genres?.map(g => g.name) || [],
+            trailer: trailer?.key || movieTrailers[title] || null
         };
 
-        omdbCache[title] = parsed;
+        tmdbCache[cacheKey] = parsed;
         return parsed;
+
     } catch (err) {
-        console.error(`OMDb fetch failed for "${title}":`, err);
+        console.error(`TMDB fetch failed for "${title}":`, err);
         return null;
     }
 }
@@ -44,6 +71,7 @@ function buildRow(movies, rowElement) {
     rowElement.innerHTML = "";
     movies.forEach(movie => {
         if (!movie.poster_path) return;
+
         const wrapper = document.createElement("div");
         wrapper.classList.add("movie-wrapper");
 
@@ -51,6 +79,7 @@ function buildRow(movies, rowElement) {
         img.src = `https://image.tmdb.org/t/p/w300${movie.poster_path}`;
         img.alt = movie.title || movie.name;
         img.classList.add("movie");
+        img.dataset.tmdbId = movie.id; // 👈 store the TMDB ID on the element
 
         const btn = document.createElement("button");
         btn.classList.add("add-btn");
@@ -309,10 +338,11 @@ async function setupMovieWrapper(wrapper) {
     const img = wrapper.querySelector(".movie");
     if (!img) return;
 
-    const data = await fetchMovieData(img.alt);
+    const tmdbId = img.dataset.tmdbId || null; // 👈 read the ID if present
+    const data = await fetchMovieData(img.alt, tmdbId); // 👈 pass it in
     if (data) buildHoverCard(wrapper, img, data);
 
-    const trailer = movieTrailers[img.alt];
+    const trailer = data?.trailer; // 👈 now comes from fetchMovieData, not the hardcoded map
     if (trailer) {
         const container = document.createElement("div");
         container.classList.add("video-container");
@@ -325,7 +355,6 @@ async function setupMovieWrapper(wrapper) {
         wrapper.appendChild(container);
 
         wrapper.addEventListener("mouseenter", function () {
-            heroVideo.src = heroVideo.src.replace("mute=0", "mute=1").replace("autoplay=1", "autoplay=0");
             video.src = `https://www.youtube.com/embed/${trailer}?autoplay=1&mute=1&controls=0&fs=0&modestbranding=1`;
             container.style.display = "block";
             img.style.visibility = "hidden";
@@ -335,24 +364,25 @@ async function setupMovieWrapper(wrapper) {
             video.src = "";
             container.style.display = "none";
             img.style.visibility = "visible";
+            // fix for the hero bug we discussed
             const current = featured[(featuredIndex - 1 + featured.length) % featured.length];
             heroVideo.src = `https://www.youtube.com/embed/${current.trailer}?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&controls=0&fs=0&modestbranding=1&playlist=${current.trailer}`;
         });
     }
+
     img.addEventListener("click", async function () {
-    heroVideo.src = heroVideo.src.replace("autoplay=1", "autoplay=0");
-    modal.classList.add("show");
-    modalTitle.textContent = img.alt;
-    modalDescription.textContent = "Loading...";
+        heroVideo.src = heroVideo.src.replace("autoplay=1", "autoplay=0");
+        modal.classList.add("show");
+        modalTitle.textContent = img.alt;
+        modalDescription.textContent = "Loading...";
 
-    const data = await fetchMovieData(img.alt);
-    modalDescription.textContent = data ? data.description : "No description available.";
+        const clickData = await fetchMovieData(img.alt, tmdbId);
+        modalDescription.textContent = clickData ? clickData.description : "No description available.";
 
-    const trailer = movieTrailers[img.alt];
-    if (trailer) {
-        modalTrailer.src = `https://www.youtube.com/embed/${trailer}?autoplay=1&mute=1`;
-    }
-});
+        if (clickData?.trailer) {
+            modalTrailer.src = `https://www.youtube.com/embed/${clickData.trailer}?autoplay=1&mute=1`;
+        }
+    });
 }
 
 // =====================
