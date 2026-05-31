@@ -378,6 +378,11 @@ async function setupMovieWrapper(wrapper) {
         wrapper.appendChild(container);
 
         wrapper.addEventListener("mouseenter", function () {
+            const rect = wrapper.getBoundingClientRect();
+            const middle = rect.left + rect.width / 2;
+            const origin = middle < window.innerWidth / 2 ? "left center" : "right center";
+            wrapper.style.transformOrigin = origin;
+
             heroVideo.style.display = "none";
 
             if (currentHeroBackdrop) {
