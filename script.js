@@ -30,12 +30,18 @@ async function fetchMovieData(title, tmdbId = null) {
         }
 
         // Try movie first, then TV
-        let detailsRes = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_KEY}`);
+        // Determine media type from search instead of guessing
+        const typeRes = await fetch(`https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(title)}&api_key=${TMDB_KEY}`);
+        const typeData = await typeRes.json();
+        const mediaType2 = typeData.results?.[0]?.media_type || "movie";
+
+        let detailsRes = await fetch(`https://api.themoviedb.org/3/${mediaType2}/${id}?api_key=${TMDB_KEY}`);
         let details = await detailsRes.json();
 
-        // If it's not a movie, try TV
+        // fallback just in case
         if (details.status_code === 34) {
-            detailsRes = await fetch(`https://api.themoviedb.org/3/tv/${id}?api_key=${TMDB_KEY}`);
+            const fallback = mediaType2 === "movie" ? "tv" : "movie";
+            detailsRes = await fetch(`https://api.themoviedb.org/3/${fallback}/${id}?api_key=${TMDB_KEY}`);
             details = await detailsRes.json();
         }
 
@@ -154,6 +160,7 @@ async function updateHero() {
 
     // store backdrop on the iframe for use when a card is hovered
     currentHeroBackdrop = data?.backdrop || "";
+    console.log("Backdrop for", current.title, ":", currentHeroBackdrop);
 
     heroVideo.src = `https://www.youtube.com/embed/${current.trailer}?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&controls=0&fs=0&modestbranding=1&playlist=${current.trailer}`;
     featuredIndex = (featuredIndex + 1) % featured.length;
