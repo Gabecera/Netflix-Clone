@@ -95,6 +95,7 @@ nav.scrolled {
     gap: 10px;
     overflow: visible;
     width: max-content;
+    transition: transform 0.3s ease;
 }
 .row-title {
     margin-left: 20px;
@@ -129,32 +130,30 @@ nav.scrolled {
     z-index: 9999;
 }
 /* only this scrolls */
-.row-scroll { 
-    overflow-x: scroll;
-    overflow-y: visible; 
-    padding-bottom: 60px; /* this determines the space between rows*/
+.row-scroll {
+    overflow: visible; /* allow hover cards to overflow even if its another row */
+    padding-bottom: 60px;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 .row-container {
     position: relative;
     overflow: visible;
 }
-/* hide scrollbar for all browsers */
-.row-scroll::-webkit-scrollbar {
+
+.row-container::-webkit-scrollbar {
     display: none;
 }
 /* no longer clips hover cards */
 .row-outer {
     overflow: visible;
     padding: 0;
-    position: relative;
-    z-index: 1; 
+    position: static;
 }
-/* when hovering over a movie, make sure the entire row can expand to show hover card */
+
 .row-outer:has(.movie-wrapper:hover) {
-    z-index: 999;
-    position: relative;
-    isolation: isolate;
+    position: static;
 }
 
 .arrow {
@@ -167,7 +166,7 @@ nav.scrolled {
     font-size: 36px;
     padding: 20px 12px;
     cursor: pointer;
-    z-index: 20;
+    z-index: 10000;
     transition: background 0.2s ease;
 }
 
@@ -386,8 +385,9 @@ nav.scrolled {
 }
 .movie-wrapper:hover {
     transform: scale(1.8);
-    z-index: 1000; /* bring hovered movie to front */
+    z-index: 9999;
     transition: transform 0.3s ease;
+    position: relative;
 }
 .video-container {
     position: absolute;

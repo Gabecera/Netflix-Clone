@@ -272,17 +272,31 @@ window.addEventListener("scroll", function () {
 
 document.querySelectorAll(".row-container").forEach(function (container) {
     const scroller = container.querySelector(".row-scroll");
+    const row = scroller.querySelector(".row");
     const leftArrow = container.querySelector(".arrow-left");
     const rightArrow = container.querySelector(".arrow-right");
+    let offset = 0;
 
-    rightArrow.addEventListener("click", () => scroller.scrollBy({ left: 500, behavior: "smooth" }));
-    leftArrow.addEventListener("click", () => scroller.scrollBy({ left: -500, behavior: "smooth" }));
+    function updateArrows() {
+        const maxScroll = row.scrollWidth - scroller.offsetWidth;
+        leftArrow.style.opacity = offset > 0 ? "1" : "0";
+        rightArrow.style.opacity = offset < maxScroll ? "1" : "0";
+    }
 
-    scroller.addEventListener("scroll", function () {
-        leftArrow.style.opacity = scroller.scrollLeft > 0 ? "1" : "0";
-        rightArrow.style.opacity =
-            scroller.scrollLeft < scroller.scrollWidth - scroller.clientWidth ? "1" : "0";
+    rightArrow.addEventListener("click", () => {
+        const maxScroll = row.scrollWidth - scroller.offsetWidth;
+        offset = Math.min(offset + 500, maxScroll);
+        row.style.transform = `translateX(-${offset}px)`;
+        updateArrows();
     });
+
+    leftArrow.addEventListener("click", () => {
+        offset = Math.max(offset - 500, 0);
+        row.style.transform = `translateX(-${offset}px)`;
+        updateArrows();
+    });
+
+    updateArrows();
 });
 
 // =====================
