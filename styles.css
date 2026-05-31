@@ -5,8 +5,7 @@ body {
         background: #111;
         color: white;
         font-family: Arial;
-        overflow-x: hidden;
-        overflow-y: visible;
+
     }
 .logo-link {
     text-decoration: none;
@@ -146,6 +145,11 @@ nav.scrolled {
 .row-outer {
     overflow: visible;
     padding: 0;
+}
+/* when hovering over a movie, make sure the entire row can expand to show hover card */
+.row-outer:has(.movie-wrapper:hover) {
+    z-index: 999;
+    position: relative;
 }
 
 .arrow {
@@ -368,7 +372,7 @@ nav.scrolled {
 }
 .movie-wrapper:hover {
     transform: scale(1.8);
-    z-index: 10;
+    z-index: 1000; /* bring hovered movie to front */
     transition: transform 0.3s ease;
 }
 .video-container {

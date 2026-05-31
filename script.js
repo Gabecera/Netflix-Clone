@@ -335,7 +335,8 @@ async function setupMovieWrapper(wrapper) {
             video.src = "";
             container.style.display = "none";
             img.style.visibility = "visible";
-            heroVideo.src = `https://www.youtube.com/embed/6Am4v0C_z8c?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&controls=0&fs=0&modestbranding=1&playlist=6Am4v0C_z8c`;
+            const current = featured[(featuredIndex - 1 + featured.length) % featured.length];
+            heroVideo.src = `https://www.youtube.com/embed/${current.trailer}?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&controls=0&fs=0&modestbranding=1&playlist=${current.trailer}`;
         });
     }
     img.addEventListener("click", async function () {
