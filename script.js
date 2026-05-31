@@ -3,7 +3,7 @@
 // =====================
 const TMDB_KEY = "d0b65271e62e6564bb47999d30242931";
 const tmdbCache = {};
-
+const heroPoster = document.getElementById("heroPoster");
 // Cache so each movie is only fetched once (protects the 1,000/day limit)
 const omdbCache = {};
 // check TMDB API 
@@ -41,21 +41,20 @@ async function fetchMovieData(title, tmdbId = null) {
 
         // Fetch trailer
         // Try movie videos first, then TV videos
-        let videoRes = await fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${TMDB_KEY}`);
-        let videoData = await videoRes.json();
-        let trailer = videoData.results?.find(v => v.type === "Trailer" && v.site === "YouTube");
+        let trailer = null;
 
-        if (!trailer) {
-            videoRes = await fetch(`https://api.themoviedb.org/3/tv/${id}/videos?api_key=${TMDB_KEY}`);
-            videoData = await videoRes.json();
-            trailer = videoData.results?.find(v => v.type === "Trailer" && v.site === "YouTube");
-        }
+// use the correct endpoint based on media type
+        const mediaType = details.first_air_date ? "tv" : "movie";
+        const videoRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${id}/videos?api_key=${TMDB_KEY}`);
+        const videoData = await videoRes.json();
+        trailer = videoData.results?.find(v => v.type === "Trailer" && v.site === "YouTube");
 
         const parsed = {
             description: details.overview || "No description available.",
             rating: Math.min(5, Math.max(1, Math.round(details.vote_average / 2))),
             genres: details.genres?.map(g => g.name) || [],
-            trailer: trailer?.key || movieTrailers[title] || null
+            trailer: trailer?.key || movieTrailers[title] || null,
+            backdrop: details.backdrop_path || details.poster_path || null
         };
 
         tmdbCache[cacheKey] = parsed;
@@ -80,7 +79,8 @@ function buildRow(movies, rowElement) {
         img.alt = movie.title || movie.name;
         img.classList.add("movie");
         img.dataset.tmdbId = movie.id; // 👈 store the TMDB ID on the element
-
+        img.dataset.tmdbId = movie.id;
+        img.dataset.backdrop = movie.backdrop_path || movie.poster_path || "";
         const btn = document.createElement("button");
         btn.classList.add("add-btn");
         btn.textContent = "+";
@@ -144,14 +144,16 @@ const featured = [
     { title: "Elemental", trailer: "hXzcyx9V0xw" }
 ];
 let featuredIndex = 0;
-
+let currentHeroBackdrop = "";
 async function updateHero() {
     const current = featured[featuredIndex];
     heroTitle.textContent = current.title;
 
-    // Fetch real description from OMDb
     const data = await fetchMovieData(current.title);
     heroDesc.textContent = data ? data.description : "";
+
+    // store backdrop on the iframe for use when a card is hovered
+    currentHeroBackdrop = data?.backdrop || "";
 
     heroVideo.src = `https://www.youtube.com/embed/${current.trailer}?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&controls=0&fs=0&modestbranding=1&playlist=${current.trailer}`;
     featuredIndex = (featuredIndex + 1) % featured.length;
@@ -355,18 +357,27 @@ async function setupMovieWrapper(wrapper) {
         wrapper.appendChild(container);
 
         wrapper.addEventListener("mouseenter", function () {
+            heroVideo.style.display = "none";
+
+            if (currentHeroBackdrop) {
+                heroPoster.style.backgroundImage = `url(https://image.tmdb.org/t/p/original${currentHeroBackdrop})`;
+                heroPoster.style.display = "block";
+            }
+
             video.src = `https://www.youtube.com/embed/${trailer}?autoplay=1&mute=1&controls=0&fs=0&modestbranding=1`;
             container.style.display = "block";
             img.style.visibility = "hidden";
         });
 
         wrapper.addEventListener("mouseleave", function () {
+            // restore hero video
+            heroVideo.style.display = "block";
+            heroPoster.style.display = "none";
+
+            // stop card trailer
             video.src = "";
             container.style.display = "none";
             img.style.visibility = "visible";
-            // fix for the hero bug we discussed
-            const current = featured[(featuredIndex - 1 + featured.length) % featured.length];
-            heroVideo.src = `https://www.youtube.com/embed/${current.trailer}?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&controls=0&fs=0&modestbranding=1&playlist=${current.trailer}`;
         });
     }
 
