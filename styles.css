@@ -252,16 +252,18 @@ nav.scrolled {
 /* Hero Section adds picture to background */
 .hero {
     margin-top: -70px;
-    height: 600px;  /* tall enough to reach past the trending row */
+    height: 600px;
     position: relative;
     overflow: hidden;
     display: flex;
-    align-items: center;
-    justify-content: flex-start;
+    flex-direction: column;
+    justify-content: center;
     padding-left: 40px;
 }
 .hero-desc {
     transition: opacity 1s ease;
+    height: 60px;        /* fixed height so layout never shifts */
+    overflow: hidden;    /* hides any text that overflows */
 }
 
 .hero-desc.hidden {
@@ -269,13 +271,21 @@ nav.scrolled {
 }
 
 .hero-title {
-    transition: font-size 1s ease, margin-bottom 1s ease, margin-top 1s ease;
+    transition: font-size 1s ease, transform 1.5s ease;
+    position: relative;
 }
 
 .hero-title.shrunk {
     font-size: 28px;
-    margin-bottom: 0;  /* pulls it closer to the buttons */
-    margin-top: 300px; /* moves it down to be vertically centered with the buttons */
+    transform: translateY(100px);  /* slides down smoothly */
+}
+.hero-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    position: relative;
+    z-index: 1;
+    margin-top: 50px;   /* adjust to move buttons up or down independently */
 }
 .hero-video-overlay {
     position: absolute;
@@ -337,6 +347,10 @@ nav.scrolled {
     position: relative;
     z-index: 1;
     max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 100px;   /* adjust to move title and description up or down */
 }
 /* add gradient overlay to make text more readable */
 .hero::after {
