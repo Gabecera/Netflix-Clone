@@ -277,15 +277,16 @@ nav.scrolled {
 
 .hero-title.shrunk {
     font-size: 28px;
-    transform: translateY(100px);  /* slides down smoothly */
+    transform: translateY(150px);  /* slides down smoothly */
 }
 .hero-buttons {
     display: flex;
     flex-direction: row;
     gap: 10px;
-    position: relative;
+    position: absolute;
     z-index: 1;
-    margin-top: 50px;   /* adjust to move buttons up or down independently */
+    top: 400px;  /* adjust to move buttons up or down independently */
+    left: 40px;
 }
 .hero-video-overlay {
     position: absolute;
@@ -344,13 +345,14 @@ nav.scrolled {
 }
 
 .hero-content {
-    position: relative;
+    position: absolute;
     z-index: 1;
     max-width: 500px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    margin-top: 100px;   /* adjust to move title and description up or down */
+    top: 100px;  /* adjust to move title up or down */
+    left: 40px;
 }
 /* add gradient overlay to make text more readable */
 .hero::after {
@@ -573,6 +575,9 @@ footer {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
+        left: 20px;
+        top: 100px;
+
     }
 
     .btn {
@@ -620,6 +625,13 @@ footer {
     padding: 7px 16px;
     font-size: 13px;
     }
+    .hero-buttons {
+        top: 250px;  /* adjust until buttons are visible at this screen size */
+        left: 20px;
+    }
+    .hero-title.shrunk {
+        transform: translateY(60px);  /* adjust for this screen size */
+    }
 }
 .modal-video-container {
     position: relative;
@@ -634,7 +646,7 @@ footer {
     top: 100%;
     left: 50%;
     transform: translateX(-50%);
-    width: 220px;
+    width: 150px;
     background: #181818;
     border-radius: 0 0 6px 6px;
     padding: 10px;
@@ -711,5 +723,16 @@ footer {
         padding: 5px 12px;
         font-size: 11px;
         width: auto;  /* add this to stop it stretching full width */
+    }
+    .hero-buttons {
+        top: 275px;  /* adjust until buttons are visible at this screen size */
+        left: 20px;
+    }
+    .hero-title.shrunk {
+        transform: translateY(75px);  /* adjust for this screen size */
+    }
+    .hero-content {
+        left: 15px;
+        top: 80px;
     }
 }
