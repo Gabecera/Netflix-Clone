@@ -164,6 +164,15 @@ async function updateHero() {
 
     heroVideo.src = `https://www.youtube.com/embed/${current.trailer}?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&controls=0&fs=0&modestbranding=1&playlist=${current.trailer}`;
     featuredIndex = (featuredIndex + 1) % featured.length;
+// reset first in case it was hidden from last rotation
+    heroDesc.classList.remove("hidden");
+    heroTitle.classList.remove("shrunk");
+
+    // hide description and shrink title after 6 seconds
+    setTimeout(() => {
+        heroDesc.classList.add("hidden");
+        heroTitle.classList.add("shrunk");
+    }, 6000);
 }
 
 // Load first hero description immediately

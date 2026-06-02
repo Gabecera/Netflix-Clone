@@ -260,7 +260,21 @@ nav.scrolled {
     justify-content: flex-start;
     padding-left: 40px;
 }
+.hero-desc {
+    transition: opacity 1s ease;
+}
 
+.hero-desc.hidden {
+    opacity: 0;
+}
+
+.hero-title {
+    transition: font-size 1s ease;
+}
+
+.hero-title.shrunk {
+    font-size: 28px;
+}
 .hero-video-overlay {
     position: absolute;
     top: 0;
@@ -583,6 +597,11 @@ footer {
         width: 100%;
         height: 200px;
     }
+    .hero .btn {
+    width: auto;
+    padding: 7px 16px;
+    font-size: 13px;
+    }
 }
 .modal-video-container {
     position: relative;
@@ -667,4 +686,12 @@ footer {
 /* browse button hover drops it down */
 .browse-dropdown:hover .dropdown-menu {
     display: block;
+}
+/* second breakpoint */
+@media (max-width: 600px) {
+    .hero .btn {
+        padding: 5px 12px;
+        font-size: 11px;
+        width: auto;  /* add this to stop it stretching full width */
+    }
 }
