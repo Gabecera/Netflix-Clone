@@ -137,7 +137,7 @@ nav.scrolled {
 /* only this scrolls */
 .row-scroll {
     overflow: visible; /* allow hover cards to overflow even if its another row */
-    padding-bottom: 60px;
+    padding-bottom: 30px;
     padding-left: 20px;
     padding-right: 20px;
 }
@@ -269,11 +269,13 @@ nav.scrolled {
 }
 
 .hero-title {
-    transition: font-size 1s ease;
+    transition: font-size 1s ease, margin-bottom 1s ease, margin-top 1s ease;
 }
 
 .hero-title.shrunk {
     font-size: 28px;
+    margin-bottom: 0;  /* pulls it closer to the buttons */
+    margin-top: 300px; /* moves it down to be vertically centered with the buttons */
 }
 .hero-video-overlay {
     position: absolute;
@@ -296,10 +298,13 @@ nav.scrolled {
 
 .hero-video-wrapper iframe {
     position: absolute;
-    top: -60px;
-    left: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1.4);  /* scale up to crop black bars */
     width: 100%;
-    height: calc(100% + 120px);
+    height: 56.25vw;
+    min-height: 100%;
+    min-width: 177.78vh;
     border: none;
     pointer-events: none;
 }
@@ -341,8 +346,7 @@ nav.scrolled {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to right, rgba(17,17,17,0.8), transparent),
-                linear-gradient(to bottom, transparent 60%, #111 100%);
+    background: linear-gradient(to bottom, transparent 60%, #111 100%);
     z-index: 0;
 }
 .hero::before {
@@ -351,8 +355,8 @@ nav.scrolled {
     top: 0;
     left: 0;
     width: 100%;
-    height: 120px;  /* covers just the nav area */
-    background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+    height: 120px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3), transparent);
     z-index: 1;
 }
 .hero h1 {
