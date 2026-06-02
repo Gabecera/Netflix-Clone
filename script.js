@@ -458,7 +458,16 @@ async function loadTMDBRows() {
     buildRow(scifi,    document.querySelectorAll(".row-scroll .row")[3]);
     buildRow(popular,  document.querySelectorAll(".row-scroll .row")[4]);
     buildRow(newReleases, document.querySelectorAll(".row-scroll .row")[5]);
-    // at the bottom of buildRow, inside the forEach, after wrapper.appendChild(btn):
+
+    // Re-run arrow visibility now that rows are populated
+    document.querySelectorAll(".row-container").forEach(function (container) {
+        const scroller = container.querySelector(".row-scroll");
+        const row = scroller.querySelector(".row");
+        const rightArrow = container.querySelector(".arrow-right");
+        if (row.scrollWidth > scroller.offsetWidth) {
+            rightArrow.style.opacity = "1";
+        }
+    });
 }
 
 loadTMDBRows();

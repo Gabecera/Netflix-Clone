@@ -93,6 +93,7 @@ nav.scrolled {
 .row {
     display: flex;
     gap: 10px;
+    flex-wrap: nowrap; /* prevent wrapping to multiple lines */
     overflow: visible;
     width: max-content;
     transition: transform 0.3s ease;
@@ -212,7 +213,9 @@ nav.scrolled {
     flex-shrink: 0; /* prevent shrinking when container is too small( when window is resized */
     width: 150px;
     height: 200px;
-    overflow: visible
+    overflow: visible;
+    flex-shrink: 0; /* prevent shrinking when container is too small( when window is resized */
+    flex-grow: 0; /* prevent growing when container is too big */
 }
 .movie-wrapper .add-btn {
     position: absolute;
@@ -535,8 +538,8 @@ footer {
 
     /* shrink movie posters */
     .movie {
-        width: 100px;
-        height: 140px;
+        width: 155px;
+        height: 200px;
     }
 
     /* shrink modal */
@@ -628,3 +631,6 @@ footer {
     border: none;
 }
 /* expand view of row */
+.browse-dropdown .arrow {
+    font-size: 10px;
+}
