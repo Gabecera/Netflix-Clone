@@ -18,11 +18,10 @@ nav {
     height: 70px;
     display: flex;
     align-items: center;
-    justify-content: space-between; /* put search bar on right */
+    justify-content: space-between;
     padding: 0 40px;
-    background: #111;
-    z-index: 100; /* keeps nav bar above everything */
-    transition: transparent; /* start see-through */
+    background: transparent;  /* change from #111 to transparent */
+    z-index: 100;
 }
 .dropdown-menu {
     display: none;
@@ -34,6 +33,9 @@ nav {
     cursor: pointer;
     font-size: 14px;
     color: white;
+}
+nav.scrolled {
+    background: #111;  /* already there — keeps it solid when user scrolls down */
 }
 .nav-right {
     display: flex;
@@ -101,8 +103,10 @@ nav.scrolled {
 .row-title {
     margin-left: 20px;
     margin-top: 10px;
-    margin-bottom: 8px; /* controls space between title and row (movies) */
+    margin-bottom: 8px;
     font-weight: normal;
+    position: relative;
+    z-index: 2;
 }
 .row::-webkit-scrollbar {
     display: none; /* hide scrollbar. Only for Chrome, Safari, and Edge. Not Firefox */
@@ -150,7 +154,8 @@ nav.scrolled {
 .row-outer {
     overflow: visible;
     padding: 0;
-    position: static;
+    position: relative;
+    z-index: 2;
 }
 
 .row-outer:has(.movie-wrapper:hover) {
@@ -246,7 +251,8 @@ nav.scrolled {
 }
 /* Hero Section adds picture to background */
 .hero {
-    height: 500px;
+    margin-top: -70px;
+    height: 600px;  /* tall enough to reach past the trending row */
     position: relative;
     overflow: hidden;
     display: flex;
@@ -266,18 +272,32 @@ nav.scrolled {
 
 .hero-video-wrapper {
     position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.hero-video-wrapper iframe {
+    position: absolute;
     top: -60px;
     left: 0;
     width: 100%;
     height: calc(100% + 120px);
-    z-index: 0;
-}
-
-.hero-video-wrapper iframe {
-    width: 100%;
-    height: 100%;
     border: none;
     pointer-events: none;
+}
+.hero-video-wrapper::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 300px;
+    background: linear-gradient(to bottom, transparent, #111);
+    z-index: 1;
 }
 #muteBtn {
     position: absolute;
@@ -307,10 +327,20 @@ nav.scrolled {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to right, rgba(17,17,17,0.8), transparent);
+    background: linear-gradient(to right, rgba(17,17,17,0.8), transparent),
+                linear-gradient(to bottom, transparent 60%, #111 100%);
     z-index: 0;
 }
-
+.hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 120px;  /* covers just the nav area */
+    background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+    z-index: 1;
+}
 .hero h1 {
     font-size: 50px;
     margin-bottom: 10px;
@@ -633,4 +663,8 @@ footer {
 /* expand view of row */
 .browse-dropdown .arrow {
     font-size: 10px;
+}
+/* browse button hover drops it down */
+.browse-dropdown:hover .dropdown-menu {
+    display: block;
 }
