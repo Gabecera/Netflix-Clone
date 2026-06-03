@@ -318,6 +318,22 @@ async function runSearch(query) {
     });
 }
 // =====================
+// Profile menu
+// =====================
+const profileMenu = document.querySelector(".profile-menu");
+const profileDropdown = document.querySelector(".profile-dropdown");
+const profileAvatarWrapper = document.querySelector(".profile-avatar-wrapper");
+
+profileAvatarWrapper.addEventListener("click", function (e) {
+    e.stopPropagation();
+    profileDropdown.classList.toggle("open");
+});
+
+window.addEventListener("click", function () {
+    profileDropdown.classList.remove("open");
+});
+
+// =====================
 // Scroll — Nav background
 // =====================
 window.addEventListener("scroll", function () {
