@@ -303,7 +303,7 @@ async function runSearch(query) {
     buildRow(results, searchResultsRow);
 
     // Re-init arrows for the search row
-    searchResultsSection.querySelectorAll(".row-container").forEach(container => {
+    document.querySelectorAll(".row-container").forEach(function (container) {
         const scroller = container.querySelector(".row-scroll");
         const row = scroller.querySelector(".row");
         const leftArrow = container.querySelector(".arrow-left");
