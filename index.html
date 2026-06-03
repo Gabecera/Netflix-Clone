@@ -20,24 +20,24 @@
             <h1 class="logo">NETFLIX</h1>
         </a>
         <ul class="nav-links desktop-links">
-            <li>Home</li>
-            <li>Shows</li>
-            <li>Movies</li>
-            <li>Games</li>
-            <li>New & Popular</li>
-            <li>My List</li>
-            <li>Browse by Languages</li>
+            <li class="active" data-view="home">Home</li>
+            <li data-view="shows">Shows</li>
+            <li data-view="movies">Movies</li>
+            <li data-view="games">Games</li>
+            <li data-view="new-popular">New & Popular</li>
+            <li data-view="my-list">My List</li>
+            <li data-view="languages">Browse by Languages</li>
         </ul>
     <div class="browse-dropdown">
         <span>Browse <span class="arrow">▼</span></span>
         <ul class="dropdown-menu">
-            <li>Home</li>
-            <li>Shows</li>
-            <li>Movies</li>
-            <li>Games</li>
-            <li>New & Popular</li>
-            <li>My List</li>
-            <li>Browse by Languages</li>
+            <li class="active" data-view="home">Home</li>
+            <li data-view="shows">Shows</li>
+            <li data-view="movies">Movies</li>
+            <li data-view="games">Games</li>
+            <li data-view="new-popular">New & Popular</li>
+            <li data-view="my-list">My List</li>
+            <li data-view="languages">Browse by Languages</li>
         </ul>
     </div>
     <div class="nav-right">
@@ -71,8 +71,14 @@
         </div>
         <button id="muteBtn">🔇</button>
     </header>
+    <section class="content-section" data-views="home my-list">
     <h2 class="row-title my-list-title">My List</h2>
     <div class="row" id="myListRow"></div>
+    <div id="myListEmpty" style="display:none; padding: 40px 60px; color: #aaa; font-size: 16px;">
+        You haven't added anything yet. Hover over a title and click <strong>+ My List</strong> to save it here.
+    </div>
+    </section>
+    <section class="content-section" data-views="home movies new-popular">
     <h2 class="row-title">Trending</h2>
 <div class="row-outer">
     <div class="row-container">
@@ -98,6 +104,8 @@
         <button class="arrow arrow-right">›</button>
     </div>   <!-- ← closes row-container -->
 </div>       <!-- ← closes row-outer -->
+    </section>
+    <section class="content-section" data-views="home movies">
     <h2 class="row-title">Action</h2>
     <!-- Movie posters w300 makes them more clearer -->
     <div class="row-outer">
@@ -136,6 +144,8 @@
         <button class="arrow arrow-right">›</button>
         </div>
     </div>
+    </section>
+    <section class="content-section" data-views="home movies">
     <h2 class="row-title">Comedy</h2>
     <div class="row-outer">
         <div class="row-container">
@@ -177,6 +187,8 @@
         <button class="arrow arrow-right">›</button>
         </div>
     </div>
+    </section>
+    <section class="content-section" data-views="home movies">
     <h2 class="row-title">Sci-Fi</h2>
     <div class="row-outer">
         <div class="row-container">
@@ -218,6 +230,8 @@
         <button class="arrow arrow-right">›</button>
         </div>
     </div>
+    </section>
+    <section class="content-section" data-views="home movies new-popular">
     <h2 class="row-title">Popular</h2>
     <div class="row-outer">
         <div class="row-container">
@@ -251,6 +265,8 @@
         <button class="arrow arrow-right">›</button>
         </div>
     </div>
+    </section>
+    <section class="content-section" data-views="home movies new-popular">
     <h2 class="row-title">New Releases</h2>
     <div class="row-outer">
         <div class="row-container">
@@ -284,6 +300,87 @@
         <button class="arrow arrow-right">›</button>
         </div>
     </div>
+    </section>
+
+    <!-- ===== SHOWS sections ===== -->
+    <section class="content-section" data-views="shows" style="display:none">
+        <h2 class="row-title">Popular Shows</h2>
+        <div class="row-outer">
+            <div class="row-container">
+                <button class="arrow arrow-left">‹</button>
+                <div class="row-clip"><div class="row-scroll">
+                    <div class="row" id="popularShowsRow"></div>
+                </div></div>
+                <button class="arrow arrow-right">›</button>
+            </div>
+        </div>
+    </section>
+    <section class="content-section" data-views="shows" style="display:none">
+        <h2 class="row-title">Drama</h2>
+        <div class="row-outer">
+            <div class="row-container">
+                <button class="arrow arrow-left">‹</button>
+                <div class="row-clip"><div class="row-scroll">
+                    <div class="row" id="dramaRow"></div>
+                </div></div>
+                <button class="arrow arrow-right">›</button>
+            </div>
+        </div>
+    </section>
+    <section class="content-section" data-views="shows" style="display:none">
+        <h2 class="row-title">Reality</h2>
+        <div class="row-outer">
+            <div class="row-container">
+                <button class="arrow arrow-left">‹</button>
+                <div class="row-clip"><div class="row-scroll">
+                    <div class="row" id="realityRow"></div>
+                </div></div>
+                <button class="arrow arrow-right">›</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== GAMES placeholder ===== -->
+    <section class="content-section" data-views="games" style="display:none">
+        <div class="placeholder-view">
+            <h2>Games</h2>
+            <p>Netflix Games is available on mobile. Download the Netflix app to play.</p>
+        </div>
+    </section>
+
+    <!-- ===== LANGUAGES ===== -->
+    <section class="content-section" data-views="languages" style="display:none">
+        <div class="placeholder-view">
+            <h2>Browse by Language</h2>
+            <div class="language-grid" id="languageGrid"></div>
+        </div>
+        <div id="languageResults" style="display:none">
+            <section class="content-section-inner">
+                <h2 class="row-title" id="langMoviesTitle">Movies</h2>
+                <div class="row-outer">
+                    <div class="row-container">
+                        <button class="arrow arrow-left">‹</button>
+                        <div class="row-clip"><div class="row-scroll">
+                            <div class="row" id="langMoviesRow"></div>
+                        </div></div>
+                        <button class="arrow arrow-right">›</button>
+                    </div>
+                </div>
+            </section>
+            <section class="content-section-inner">
+                <h2 class="row-title" id="langShowsTitle">Shows</h2>
+                <div class="row-outer">
+                    <div class="row-container">
+                        <button class="arrow arrow-left">‹</button>
+                        <div class="row-clip"><div class="row-scroll">
+                            <div class="row" id="langShowsRow"></div>
+                        </div></div>
+                        <button class="arrow arrow-right">›</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </section>
 
     <div id="movieModal" class="modal">
         <div class="modal-content">

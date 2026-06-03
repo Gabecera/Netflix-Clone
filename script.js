@@ -174,7 +174,7 @@ async function updateHero() {
         heroTitle.classList.add("shrunk");
     }, 6000);
 }
-
+let isMuted = true;
 // Load first hero description immediately
 updateHero();
 setInterval(updateHero, 30000);
@@ -182,7 +182,6 @@ setInterval(updateHero, 30000);
 // =====================
 // Mute Button
 // =====================
-let isMuted = true;
 muteBtn.textContent = "🔇";
 
 muteBtn.addEventListener("click", function () {
@@ -201,13 +200,16 @@ const myList = JSON.parse(localStorage.getItem("myList")) || [];
 function renderMyList() {
     myListRow.innerHTML = "";
     const title = document.querySelector(".my-list-title");
+    const emptyState = document.getElementById("myListEmpty");
 
     if (myList.length === 0) {
         title.style.display = "none";
+        if (emptyState) emptyState.style.display = "block";
         return;
     }
 
     title.style.display = "block";
+    if (emptyState) emptyState.style.display = "none";
 
     myList.forEach(function (movieItem, index) {
         const wrapper = document.createElement("div");
@@ -542,3 +544,192 @@ async function loadTMDBRows() {
 loadTMDBRows();
 // for manual hardcoded wrappers
 document.querySelectorAll(".movie-wrapper").forEach(setupMovieWrapper);
+
+// =====================
+// Nav — view switching
+// =====================
+let showsLoaded = false;
+const allNavItems = document.querySelectorAll(".nav-links li, .dropdown-menu li");
+const contentSections = document.querySelectorAll(".content-section");
+
+const heroEl = document.querySelector("header.hero");
+const heroVideoWrapperEl = document.querySelector(".hero-video-wrapper");
+const heroViews = ["home", "movies", "shows", "new-popular"];
+
+function setView(view) {
+    // Show/hide sections
+    contentSections.forEach(section => {
+        const views = section.dataset.views.split(" ");
+        section.style.display = views.includes(view) ? "block" : "none";
+    });
+
+    // Show/hide hero based on view
+    const showHero = heroViews.includes(view);
+    heroEl.style.display = showHero ? "" : "none";
+    heroVideoWrapperEl.style.display = showHero ? "" : "none";
+
+    // Update active class on all nav items
+    allNavItems.forEach(item => {
+        item.classList.toggle("active", item.dataset.view === view);
+    });
+
+    // Lazy-load shows rows on first click
+    if (view === "shows" && !showsLoaded) {
+        loadTMDBShowsRows();
+        showsLoaded = true;
+    }
+
+    // Populate language grid on first visit
+    if (view === "languages") {
+        populateLanguageGrid();
+    }
+
+    // Show empty state if navigating directly to My List
+    if (view === "my-list" && myList.length === 0) {
+        document.getElementById("myListEmpty").style.display = "block";
+    }
+
+    // Scroll to top of content on view change
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+allNavItems.forEach(item => {
+    item.addEventListener("click", function (e) {
+        e.stopPropagation();
+        const view = item.dataset.view || "home";
+        setView(view);
+        // Close dropdown if open
+        dropdownMenu.classList.remove("open");
+    });
+});
+
+// Logo click resets to Home
+document.querySelector(".logo-link").addEventListener("click", function () {
+    setView("home");
+});
+
+// =====================
+// Shows — TMDB TV rows
+// =====================
+async function loadTMDBShowsRows() {
+    const [popular, drama, reality] = await Promise.all([
+        fetchTMDBRow("/tv/popular?language=en-US"),
+        fetchTMDBRow("/discover/tv?with_genres=18&sort_by=popularity.desc"),
+        fetchTMDBRow("/discover/tv?with_genres=10764&sort_by=popularity.desc")
+    ]);
+
+    buildRow(popular, document.getElementById("popularShowsRow"));
+    buildRow(drama,   document.getElementById("dramaRow"));
+    buildRow(reality, document.getElementById("realityRow"));
+
+    // Re-run arrow visibility for newly populated rows
+    document.querySelectorAll(".content-section[data-views='shows'] .row-container").forEach(function (container) {
+        const scroller = container.querySelector(".row-scroll");
+        const row = scroller.querySelector(".row");
+        const rightArrow = container.querySelector(".arrow-right");
+        const leftArrow = container.querySelector(".arrow-left");
+        let offset = 0;
+
+        rightArrow.addEventListener("click", () => {
+            const maxScroll = row.scrollWidth - scroller.offsetWidth;
+            offset = Math.min(offset + 500, maxScroll);
+            row.style.transform = `translateX(-${offset}px)`;
+            leftArrow.style.opacity = offset > 0 ? "1" : "0";
+            rightArrow.style.opacity = offset < maxScroll ? "1" : "0";
+        });
+        leftArrow.addEventListener("click", () => {
+            offset = Math.max(offset - 500, 0);
+            row.style.transform = `translateX(-${offset}px)`;
+            leftArrow.style.opacity = offset > 0 ? "1" : "0";
+            rightArrow.style.opacity = "1";
+        });
+
+        leftArrow.style.opacity = "0";
+        rightArrow.style.opacity = row.scrollWidth > scroller.offsetWidth ? "1" : "0";
+    });
+}
+
+// =====================
+// Languages grid + filtering
+// =====================
+const languageMap = {
+    "English":    "en",
+    "Spanish":    "es",
+    "French":     "fr",
+    "Korean":     "ko",
+    "Japanese":   "ja",
+    "Hindi":      "hi",
+    "Portuguese": "pt",
+    "German":     "de",
+    "Italian":    "it",
+    "Mandarin":   "zh",
+    "Arabic":     "ar",
+    "Turkish":    "tr"
+};
+let languagesLoaded = false;
+
+function initRowArrows(container) {
+    const scroller = container.querySelector(".row-scroll");
+    const row = scroller.querySelector(".row");
+    const leftArrow = container.querySelector(".arrow-left");
+    const rightArrow = container.querySelector(".arrow-right");
+    let offset = 0;
+    rightArrow.onclick = () => {
+        const max = row.scrollWidth - scroller.offsetWidth;
+        offset = Math.min(offset + 500, max);
+        row.style.transform = `translateX(-${offset}px)`;
+        leftArrow.style.opacity = offset > 0 ? "1" : "0";
+        rightArrow.style.opacity = offset < max ? "1" : "0";
+    };
+    leftArrow.onclick = () => {
+        offset = Math.max(offset - 500, 0);
+        row.style.transform = `translateX(-${offset}px)`;
+        leftArrow.style.opacity = offset > 0 ? "1" : "0";
+        rightArrow.style.opacity = "1";
+    };
+    leftArrow.style.opacity = "0";
+    rightArrow.style.opacity = row.scrollWidth > scroller.offsetWidth ? "1" : "0";
+}
+
+async function loadLanguageContent(langCode, langName) {
+    const moviesRow = document.getElementById("langMoviesRow");
+    const showsRow  = document.getElementById("langShowsRow");
+    const results   = document.getElementById("languageResults");
+
+    moviesRow.innerHTML = "<p style='padding:20px;color:#aaa'>Loading…</p>";
+    showsRow.innerHTML  = "<p style='padding:20px;color:#aaa'>Loading…</p>";
+    results.style.display = "block";
+
+    document.getElementById("langMoviesTitle").textContent = `${langName} Movies`;
+    document.getElementById("langShowsTitle").textContent  = `${langName} Shows`;
+
+    const [movies, shows] = await Promise.all([
+        fetchTMDBRow(`/discover/movie?with_original_language=${langCode}&sort_by=popularity.desc`),
+        fetchTMDBRow(`/discover/tv?with_original_language=${langCode}&sort_by=popularity.desc`)
+    ]);
+
+    buildRow(movies, moviesRow);
+    buildRow(shows,  showsRow);
+
+    // init arrows after rows are populated
+    document.querySelectorAll("#languageResults .row-container").forEach(initRowArrows);
+}
+
+function populateLanguageGrid() {
+    if (languagesLoaded) return;
+    const grid = document.getElementById("languageGrid");
+    if (!grid) return;
+    Object.keys(languageMap).forEach(lang => {
+        const tag = document.createElement("div");
+        tag.classList.add("language-tag");
+        tag.textContent = lang;
+        tag.addEventListener("click", function () {
+            // highlight active tag
+            document.querySelectorAll(".language-tag").forEach(t => t.classList.remove("active"));
+            tag.classList.add("active");
+            loadLanguageContent(languageMap[lang], lang);
+        });
+        grid.appendChild(tag);
+    });
+    languagesLoaded = true;
+}
