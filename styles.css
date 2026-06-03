@@ -7,7 +7,15 @@ body {
         color: white;
         font-family: Arial;
 
-    }
+}
+/* takes the top of hover card off */
+.row-clip {
+    overflow: hidden;
+    padding-top: 10px;    /* small gap so the very top of scaled card isn't hard-cut */
+    margin-top: -10px;
+    padding-bottom: 400px;   /* enough room for the hover card to show below */
+    margin-bottom: -400px;   /* cancel out the extra space so layout isn't affected */
+}
 .logo-link {
     text-decoration: none;
 }
