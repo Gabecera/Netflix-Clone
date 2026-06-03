@@ -1,5 +1,6 @@
 /* Layout */
 body {
+        overflow-x: hidden;  /* add this line */
         margin: 0;
         padding-top: 70px; /* to prevent content from being hidden behind nav bar. Matches navbar height */
         background: #111;

@@ -250,7 +250,14 @@ document.querySelectorAll(".add-btn").forEach(function (btn) {
         }
     });
 });
-
+// =====================
+// Block horizontal scroll on entire page
+// =====================
+document.addEventListener("wheel", function (e) {
+    if (Math.abs(e.deltaX) >= Math.abs(e.deltaY)) {
+        e.preventDefault();
+    }
+}, { passive: false });
 // =====================
 // Search
 // =====================
@@ -260,14 +267,67 @@ searchIcon.addEventListener("click", function () {
     if (searchInput.classList.contains("visible")) searchInput.focus();
 });
 
-searchInput.addEventListener("input", function () {
-    const query = searchInput.value.toLowerCase();
-    movies.forEach(function (movie) {
-        movie.closest(".movie-wrapper").style.display =
-            movie.alt.toLowerCase().includes(query) ? "flex" : "none";
-    });
-});
+const searchResultsSection = document.getElementById("searchResultsSection");
+const searchResultsRow = document.getElementById("searchResultsRow");
+let searchTimeout = null;
 
+searchInput.addEventListener("input", function () {
+    const query = searchInput.value.trim();
+
+    // Hide results and show normal rows if search is cleared
+    if (!query) {
+        searchResultsSection.style.display = "none";
+        return;
+    }
+
+    // Debounce — wait 400ms after user stops typing before hitting the API
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => runSearch(query), 400);
+});
+async function runSearch(query) {
+    const res = await fetch(
+        `https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(query)}&api_key=${TMDB_KEY}`
+    );
+    const data = await res.json();
+
+    // Filter to only results that have a poster
+    const results = (data.results || []).filter(r => r.poster_path);
+
+    if (results.length === 0) {
+        searchResultsSection.style.display = "none";
+        return;
+    }
+
+    // Show the section and populate the row
+    searchResultsSection.style.display = "block";
+    buildRow(results, searchResultsRow);
+
+    // Re-init arrows for the search row
+    searchResultsSection.querySelectorAll(".row-container").forEach(container => {
+        const scroller = container.querySelector(".row-scroll");
+        const row = scroller.querySelector(".row");
+        const leftArrow = container.querySelector(".arrow-left");
+        const rightArrow = container.querySelector(".arrow-right");
+        let offset = 0;
+
+        rightArrow.onclick = () => {
+            const max = row.scrollWidth - scroller.offsetWidth;
+            offset = Math.min(offset + 500, max);
+            row.style.transform = `translateX(-${offset}px)`;
+            leftArrow.style.opacity = "1";
+            rightArrow.style.opacity = offset >= max ? "0" : "1";
+        };
+        leftArrow.onclick = () => {
+            offset = Math.max(offset - 500, 0);
+            row.style.transform = `translateX(-${offset}px)`;
+            leftArrow.style.opacity = offset <= 0 ? "0" : "1";
+            rightArrow.style.opacity = "1";
+        };
+
+        leftArrow.style.opacity = "0";
+        rightArrow.style.opacity = row.scrollWidth > scroller.offsetWidth ? "1" : "0";
+    });
+}
 // =====================
 // Scroll — Nav background
 // =====================
@@ -461,12 +521,12 @@ async function loadTMDBRows() {
         fetchTMDBRow("/movie/now_playing?language=en-US")
     ]);
 
-    buildRow(trending, document.querySelectorAll(".row-scroll .row")[0]);
-    buildRow(action,   document.querySelectorAll(".row-scroll .row")[1]);
-    buildRow(comedy,   document.querySelectorAll(".row-scroll .row")[2]);
-    buildRow(scifi,    document.querySelectorAll(".row-scroll .row")[3]);
-    buildRow(popular,  document.querySelectorAll(".row-scroll .row")[4]);
-    buildRow(newReleases, document.querySelectorAll(".row-scroll .row")[5]);
+    buildRow(trending,    document.getElementById("trendingRow"));
+    buildRow(action,      document.getElementById("actionRow"));
+    buildRow(comedy,      document.getElementById("comedyRow"));
+    buildRow(scifi,       document.getElementById("scifiRow"));
+    buildRow(popular,     document.getElementById("popularRow"));
+    buildRow(newReleases, document.getElementById("newReleasesRow"));
 
     // Re-run arrow visibility now that rows are populated
     document.querySelectorAll(".row-container").forEach(function (container) {
