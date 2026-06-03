@@ -576,16 +576,23 @@ footer {
 }
 /*for mobile */
 @media (max-width: 950px) {
+    nav {
+        justify-content: flex-start;
+        gap: 16px;
+        padding: 0 20px;
+    }
     .desktop-links {
         display: none;
     }
     .browse-dropdown {
-        display: block;
+        display: inline-flex;
+        align-items: center;
         position: relative;
         cursor: pointer;
         font-size: 14px;
         color: white;
-        padding-left: 10px;
+        width: fit-content;
+        flex-shrink: 0;
     }
     .dropdown-menu {
         display: none;
@@ -762,12 +769,14 @@ footer {
     border: none;
 }
 /* expand view of row */
-.browse-dropdown .arrow {
+.browse-dropdown .dropdown-arrow {
     font-size: 10px;
 }
-/* browse button hover drops it down */
-.browse-dropdown:hover .dropdown-menu {
-    display: block;
+/* browse button hover drops it down — desktop only (not touch devices) */
+@media (hover: hover) {
+    .browse-dropdown:hover .dropdown-menu {
+        display: block;
+    }
 }
 /* second breakpoint */
 @media (max-width: 600px) {

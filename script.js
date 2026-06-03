@@ -87,12 +87,7 @@ function buildRow(movies, rowElement) {
         img.dataset.tmdbId = movie.id; // 👈 store the TMDB ID on the element
         img.dataset.tmdbId = movie.id;
         img.dataset.backdrop = movie.backdrop_path || movie.poster_path || "";
-        const btn = document.createElement("button");
-        btn.classList.add("add-btn");
-        btn.textContent = "+";
-
         wrapper.appendChild(img);
-        wrapper.appendChild(btn);
         rowElement.appendChild(wrapper);
 
         setupMovieWrapper(wrapper);
@@ -234,24 +229,16 @@ function renderMyList() {
         wrapper.appendChild(img);
         wrapper.appendChild(removeBtn);
         myListRow.appendChild(wrapper);
+        setupMovieWrapper(wrapper);
     });
+
+    // Re-init arrows after items are rendered
+    const myListContainer = myListRow.closest(".row-container");
+    if (myListContainer) initRowArrows(myListContainer);
 }
 
 renderMyList();
 
-document.querySelectorAll(".add-btn").forEach(function (btn) {
-    btn.addEventListener("click", function (e) {
-        e.stopPropagation();
-        const img = btn.previousElementSibling;
-        const already = myList.find(m => m.alt === img.alt);
-        if (!already) {
-            myList.push({ src: img.src, alt: img.alt });
-            localStorage.setItem("myList", JSON.stringify(myList));
-            btn.textContent = "✓";
-            renderMyList();
-        }
-    });
-});
 // =====================
 // Block horizontal scroll on entire page
 // =====================
@@ -488,7 +475,8 @@ async function setupMovieWrapper(wrapper) {
         modalDescription.textContent = clickData ? clickData.description : "No description available.";
 
         if (clickData?.trailer) {
-            modalTrailer.src = `https://www.youtube.com/embed/${clickData.trailer}?autoplay=1&mute=1`;
+            currentModalTrailerKey = clickData.trailer;
+            modalTrailer.src = `https://www.youtube.com/embed/${clickData.trailer}?autoplay=1&mute=1&enablejsapi=1`;
         }
     });
 }
@@ -508,9 +496,17 @@ window.addEventListener("click", () => dropdownMenu.classList.remove("open"));
 // =====================
 
 
+let currentModalTrailerKey = null;
+
 closeModal.addEventListener("click", function () {
     modal.classList.remove("show");
     modalTrailer.src = "";
+    currentModalTrailerKey = null;
+});
+
+document.querySelector("#movieModal .btn").addEventListener("click", function () {
+    if (!currentModalTrailerKey) return;
+    window.open(`https://www.youtube.com/watch?v=${currentModalTrailerKey}`, "_blank");
 });
 // call for each row
 async function loadTMDBRows() {

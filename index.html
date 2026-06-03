@@ -29,7 +29,7 @@
             <li data-view="languages">Browse by Languages</li>
         </ul>
     <div class="browse-dropdown">
-        <span>Browse <span class="arrow">▼</span></span>
+        <span>Browse <span class="dropdown-arrow">▼</span></span>
         <ul class="dropdown-menu">
             <li class="active" data-view="home">Home</li>
             <li data-view="shows">Shows</li>
@@ -73,7 +73,15 @@
     </header>
     <section class="content-section" data-views="home my-list">
     <h2 class="row-title my-list-title">My List</h2>
-    <div class="row" id="myListRow"></div>
+    <div class="row-outer">
+        <div class="row-container">
+            <button class="arrow arrow-left">‹</button>
+            <div class="row-clip"><div class="row-scroll">
+                <div class="row" id="myListRow"></div>
+            </div></div>
+            <button class="arrow arrow-right">›</button>
+        </div>
+    </div>
     <div id="myListEmpty" style="display:none; padding: 40px 60px; color: #aaa; font-size: 16px;">
         You haven't added anything yet. Hover over a title and click <strong>+ My List</strong> to save it here.
     </div>
@@ -88,16 +96,13 @@
             <div class="row" id="trendingRow">
                 <div class="movie-wrapper">
                     <img class="movie" src="https://image.tmdb.org/t/p/w300/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg" alt="Avengers Infinity War">
-                    <button class="add-btn">+</button>
-                </div>
+                    </div>
                 <div class="movie-wrapper">
                     <img class="movie" src="https://image.tmdb.org/t/p/w300/9Gtg2DzBhmYamXBS1hKAhiwbBKS.jpg" alt="Doctor Strange">
-                    <button class="add-btn">+</button>
-                </div>
+                    </div>
                 <div class="movie-wrapper">
                     <img class="movie" src="https://image.tmdb.org/t/p/w300/x2LSRK2Cm7MZhjluni1msVJ3wDF.jpg" alt="Stranger Things 3">
-                    <button class="add-btn">+</button>
-                </div>
+                    </div>
             </div>
         </div>
         </div>
@@ -116,27 +121,21 @@
             <div class="row" id="actionRow">
                 <div class="movie-wrapper">
                 <img class="movie" src="https://image.tmdb.org/t/p/w300/tVxDe01Zy3kZqaZRNiXFGDICdZk.jpg" alt="Bullet Train">
-                <button class="add-btn">+</button>
                 </div>
                 <div class="movie-wrapper">
                 <img class="movie" src="https://image.tmdb.org/t/p/w300/8QVDXDiOGHRcAD4oM6MXjE0osSj.jpg" alt="Alienoid">
-                <button class="add-btn">+</button>
                 </div>
                 <div class="movie-wrapper">
                 <img class="movie" src="https://image.tmdb.org/t/p/w300/qNBAXBIQlnOThrVvA6mA2B5ggV6.jpg" alt="The Super Mario Bros. Movie">
-                <button class="add-btn">+</button>
                 </div>
                 <div class="movie-wrapper">
                 <img class="movie" src="https://image.tmdb.org/t/p/w300/9Gtg2DzBhmYamXBS1hKAhiwbBKS.jpg" alt="Doctor Strange in the Multiverse of Madness">
-                <button class="add-btn">+</button>
                 </div>
                 <div class="movie-wrapper">
                 <img class="movie" src="https://image.tmdb.org/t/p/w300/4m1Au3YkjqsxF8iwQy0fPYSxE0h.jpg" alt="Meg 2">
-                <button class="add-btn">+</button>
                 </div>
                 <div class="movie-wrapper">
                 <img class="movie" src="https://image.tmdb.org/t/p/w300/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg" alt="The Avengers: Infinity War">
-                <button class="add-btn">+</button>
                 </div>
             </div>
             </div>
@@ -152,36 +151,7 @@
         <button class="arrow arrow-left">‹</button>
             <div class="row-clip">
             <div class="row-scroll">
-            <div class="row" id="comedyRow">
-                <div class="movie-wrapper">
-                <img class="movie" src="https://image.tmdb.org/t/p/w300/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg" alt="Wonder Woman 1984">
-                <button class="add-btn">+</button>
-                </div>
-                <div class="movie-wrapper">
-                <img class="movie" src="https://image.tmdb.org/t/p/w300/4Y1WNkd88JXmGfhtWR7dmDAo1T2.jpg" alt="Elemental">
-                <button class="add-btn">+</button>
-                </div>
-                <div class="movie-wrapper">
-                <img class="movie" src="https://placehold.co/300x450/E50914/FFFFFF?text=Comedy+Movie+1" alt="Comedy Movie 1">
-                <button class="add-btn">+</button>
-                </div>
-                <div class="movie-wrapper">
-                <img class="movie" src="https://placehold.co/300x450/E50914/FFFFFF?text=Comedy+Movie+2" alt="Comedy Movie 2">
-                <button class="add-btn">+</button>
-                </div>
-                <div class="movie-wrapper">
-                <img class="movie" src="https://placehold.co/300x450/E50914/FFFFFF?text=Comedy+Movie+3" alt="Comedy Movie 3">
-                <button class="add-btn">+</button>
-                </div>
-                <div class="movie-wrapper">
-                <img class="movie" src="https://placehold.co/300x450/E50914/FFFFFF?text=Comedy+Movie+4" alt="Comedy Movie 4">
-                <button class="add-btn">+</button>
-                </div>
-                <div class="movie-wrapper">
-                <img class="movie" src="https://placehold.co/300x450/E50914/FFFFFF?text=Comedy+Movie+5" alt="Comedy Movie 5">
-                <button class="add-btn">+</button>
-                </div>
-            </div>
+            <div class="row" id="comedyRow"></div>
             </div>
             </div>
         <button class="arrow arrow-right">›</button>
@@ -195,36 +165,7 @@
         <button class="arrow arrow-left">‹</button>
             <div class="row-clip">
             <div class="row-scroll">
-            <div class="row" id="scifiRow">
-                <div class="movie-wrapper">
-                <img class="movie" src="https://image.tmdb.org/t/p/w300/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg" alt="Dune Part 2">
-                <button class="add-btn">+</button>
-                </div>
-                <div class="movie-wrapper">
-                <img class="movie" src="https://placehold.co/300x450/111/00FFFF?text=Sci-Fi+1" alt="Sci-Fi Movie 1">
-                <button class="add-btn">+</button>
-                </div>
-                <div class="movie-wrapper">
-                <img class="movie" src="https://placehold.co/300x450/111/00FFFF?text=Sci-Fi+2" alt="Sci-Fi Movie 2">
-                <button class="add-btn">+</button>
-                </div>
-                <div class="movie-wrapper">
-                <img class="movie" src="https://placehold.co/300x450/111/00FFFF?text=Sci-Fi+3" alt="Sci-Fi Movie 3">
-                <button class="add-btn">+</button>
-                </div>
-                <div class="movie-wrapper">
-                <img class="movie" src="https://placehold.co/300x450/111/00FFFF?text=Sci-Fi+4" alt="Sci-Fi Movie 4">
-                <button class="add-btn">+</button>
-                </div>
-                <div class="movie-wrapper">
-                <img class="movie" src="https://placehold.co/300x450/111/00FFFF?text=Sci-Fi+5" alt="Sci-Fi Movie 5">
-                <button class="add-btn">+</button>
-                </div>
-                <div class="movie-wrapper">
-                <img class="movie" src="https://placehold.co/300x450/111/00FFFF?text=Sci-Fi+6" alt="Sci-Fi Movie 6">
-                <button class="add-btn">+</button>
-                </div>
-            </div>
+            <div class="row" id="scifiRow"></div>
             </div>
             </div>
         <button class="arrow arrow-right">›</button>
@@ -238,28 +179,7 @@
         <button class="arrow arrow-left">‹</button>
             <div class="row-clip">
             <div class="row-scroll">
-            <div class="row" id="popularRow">
-                <div class="movie-wrapper">
-                <img class="movie" src="https://placehold.co/300x450/111/1E90FF?text=Popular+1" alt="Popular Movie 1">
-                <button class="add-btn">+</button>
-                </div>
-                <div class="movie-wrapper">
-                <img class="movie" src="https://placehold.co/300x450/111/1E90FF?text=Popular+2" alt="Popular Movie 2">
-                <button class="add-btn">+</button>
-                </div>
-                <div class="movie-wrapper">
-                <img class="movie" src="https://placehold.co/300x450/111/1E90FF?text=Popular+3" alt="Popular Movie 3">
-                <button class="add-btn">+</button>
-                </div>
-                <div class="movie-wrapper">
-                <img class="movie" src="https://placehold.co/300x450/111/1E90FF?text=Popular+4" alt="Popular Movie 4">
-                <button class="add-btn">+</button>
-                </div>
-                <div class="movie-wrapper">
-                <img class="movie" src="https://placehold.co/300x450/111/1E90FF?text=Popular+5" alt="Popular Movie 5">
-                <button class="add-btn">+</button>
-                </div>
-            </div>
+            <div class="row" id="popularRow"></div>
             </div>
             </div>
         <button class="arrow arrow-right">›</button>
@@ -273,28 +193,7 @@
         <button class="arrow arrow-left">‹</button>
             <div class="row-clip">
             <div class="row-scroll">
-            <div class="row" id="newReleasesRow">
-                <div class="movie-wrapper">
-                <img class="movie" src="https://placehold.co/300x450/111/32CD32?text=New+1" alt="New Release 1">
-                <button class="add-btn">+</button>
-                </div>
-                <div class="movie-wrapper">
-                <img class="movie" src="https://placehold.co/300x450/111/32CD32?text=New+2" alt="New Release 2">
-                <button class="add-btn">+</button>
-                </div>
-                <div class="movie-wrapper">
-                <img class="movie" src="https://placehold.co/300x450/111/32CD32?text=New+3" alt="New Release 3">
-                <button class="add-btn">+</button>
-                </div>
-                <div class="movie-wrapper">
-                <img class="movie" src="https://placehold.co/300x450/111/32CD32?text=New+4" alt="New Release 4">
-                <button class="add-btn">+</button>
-                </div>
-                <div class="movie-wrapper">
-                <img class="movie" src="https://placehold.co/300x450/111/32CD32?text=New+5" alt="New Release 5">
-                <button class="add-btn">+</button>
-                </div>
-            </div>
+            <div class="row" id="newReleasesRow"></div>
             </div>
             </div>
         <button class="arrow arrow-right">›</button>
