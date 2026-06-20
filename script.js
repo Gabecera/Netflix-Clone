@@ -133,33 +133,33 @@ const heroDesc = document.querySelector(".hero-content p");
 // =====================
 // Hero Rotation
 // =====================
-const featured = [
-    { title: "Stranger Things 3", trailer: "6Am4v0C_z8c" },
-    { title: "Dune Part 2", trailer: "Way9Dexny3w" },
-    { title: "Bullet Train", trailer: "0IOsk2Vlc4o" },
-    { title: "Avengers Infinity War", trailer: "6ZfuNTqbHE8" },
-    { title: "Doctor Strange in the Multiverse of Madness", trailer: "aWzlQ2N6qqg" },
-    { title: "The Super Mario Bros. Movie", trailer: "TnGl01FkMMo" },
-    { title: "Meg 2", trailer: "dG91B3hHyY4" },
-    { title: "Wonder Woman 1984", trailer: "sfM7_JLk-84" },
-    { title: "Elemental", trailer: "hXzcyx9V0xw" }
-];
+// Featured list is populated dynamically from TMDB trending — no hardcoded titles
+const featured = [];
 let featuredIndex = 0;
+let heroInterval = null;
 let currentHeroBackdrop = "";
+let currentHeroEntry = null; // tracks the currently displayed hero item + its data
 async function updateHero() {
+    if (featured.length === 0) return; // wait until trending loads
     const current = featured[featuredIndex];
     heroTitle.textContent = current.title;
 
-    const data = await fetchMovieData(current.title);
+    const data = await fetchMovieData(current.title, current.tmdbId || null);
     heroDesc.textContent = data ? data.description : "";
 
-    // store backdrop on the iframe for use when a card is hovered
+    // store backdrop for use when a card is hovered
     currentHeroBackdrop = data?.backdrop || "";
-    console.log("Backdrop for", current.title, ":", currentHeroBackdrop);
 
-    heroVideo.src = `https://www.youtube.com/embed/${current.trailer}?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&controls=0&fs=0&modestbranding=1&playlist=${current.trailer}`;
+    // track current hero so buttons can reference it
+    currentHeroEntry = { ...current, data };
+
+    const trailerKey = data?.trailer;
+    if (trailerKey) {
+        heroVideo.src = `https://www.youtube.com/embed/${trailerKey}?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&controls=0&fs=0&modestbranding=1&playlist=${trailerKey}`;
+    }
+
     featuredIndex = (featuredIndex + 1) % featured.length;
-// reset first in case it was hidden from last rotation
+    // reset first in case it was hidden from last rotation
     heroDesc.classList.remove("hidden");
     heroTitle.classList.remove("shrunk");
 
@@ -170,9 +170,7 @@ async function updateHero() {
     }, 6000);
 }
 let isMuted = true;
-// Load first hero description immediately
-updateHero();
-setInterval(updateHero, 30000);
+// Hero rotation starts after trending loads (see loadTMDBRows)
 
 // =====================
 // Mute Button
@@ -421,10 +419,29 @@ function buildHoverCard(wrapper, img, data) {
         renderMyList();
     });
 
+    // Play button — navigates to the video player
+    const btnRow = document.createElement("div");
+    btnRow.classList.add("hover-card-btns");
+
+    const playBtn = document.createElement("button");
+    playBtn.classList.add("hover-play-btn");
+    playBtn.innerHTML = "&#9654;";
+    playBtn.title = "Play";
+    playBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        const trailerKey = data?.trailer;
+        if (trailerKey) {
+            window.location.href = `player.html?trailer=${trailerKey}&title=${encodeURIComponent(img.alt)}`;
+        }
+    });
+
+    btnRow.appendChild(playBtn);
+    btnRow.appendChild(addBtn);
+
     card.appendChild(title);
     card.appendChild(stars);
     card.appendChild(genreRow);
-    card.appendChild(addBtn);
+    card.appendChild(btnRow);
     wrapper.appendChild(card);
 }
 
@@ -481,18 +498,11 @@ async function setupMovieWrapper(wrapper) {
         });
     }
 
-    img.addEventListener("click", async function () {
-        heroVideo.src = heroVideo.src.replace("autoplay=1", "autoplay=0");
-        modal.classList.add("show");
-        modalTitle.textContent = img.alt;
-        modalDescription.textContent = "Loading...";
-
+    wrapper.addEventListener("click", async function () {
         const clickData = await fetchMovieData(img.alt, tmdbId);
-        modalDescription.textContent = clickData ? clickData.description : "No description available.";
-
-        if (clickData?.trailer) {
-            currentModalTrailerKey = clickData.trailer;
-            modalTrailer.src = `https://www.youtube.com/embed/${clickData.trailer}?autoplay=1&mute=1&enablejsapi=1`;
+        const trailerKey = clickData?.trailer;
+        if (trailerKey) {
+            window.location.href = `player.html?trailer=${trailerKey}&title=${encodeURIComponent(img.alt)}`;
         }
     });
 }
@@ -514,10 +524,43 @@ window.addEventListener("click", () => dropdownMenu.classList.remove("open"));
 
 let currentModalTrailerKey = null;
 
+// =====================
+// Hero Buttons
+// =====================
+const heroPlayBtn = document.querySelector(".hero-buttons .btn:first-child");
+const heroMoreInfoBtn = document.querySelector(".hero-buttons .btn-secondary");
+
+heroPlayBtn.addEventListener("click", function () {
+    const trailerKey = currentHeroEntry?.data?.trailer;
+    const title      = currentHeroEntry?.title || "";
+    if (trailerKey) {
+        window.location.href = `player.html?trailer=${trailerKey}&title=${encodeURIComponent(title)}`;
+    }
+});
+
+heroMoreInfoBtn.addEventListener("click", async function () {
+    if (!currentHeroEntry) return;
+    const { title, tmdbId, data } = currentHeroEntry;
+
+    // Pause the hero video while modal is open
+    heroVideo.src = heroVideo.src.replace("autoplay=1", "autoplay=0");
+
+    modal.classList.add("show");
+    modalTitle.textContent = title;
+    modalDescription.textContent = data?.description || "Loading...";
+
+    if (data?.trailer) {
+        currentModalTrailerKey = data.trailer;
+        modalTrailer.src = `https://www.youtube.com/embed/${data.trailer}?autoplay=1&mute=1&enablejsapi=1`;
+    }
+});
+
 closeModal.addEventListener("click", function () {
     modal.classList.remove("show");
     modalTrailer.src = "";
     currentModalTrailerKey = null;
+    // Resume hero video
+    heroVideo.src = heroVideo.src.replace("autoplay=0", "autoplay=1");
 });
 
 document.querySelector("#movieModal .btn").addEventListener("click", function () {
@@ -541,6 +584,23 @@ async function loadTMDBRows() {
     buildRow(scifi,       document.getElementById("scifiRow"));
     buildRow(popular,     document.getElementById("popularRow"));
     buildRow(newReleases, document.getElementById("newReleasesRow"));
+
+    // Populate hero rotation from trending (movies + TV both included)
+    featured.length = 0;
+    featuredIndex = 0;
+    trending
+        .filter(item => item.poster_path) // only items with artwork
+        .slice(0, 10)
+        .forEach(item => {
+            featured.push({
+                title: item.title || item.name,
+                tmdbId: item.id
+            });
+        });
+    // Start/restart the rotation now that trending data is ready
+    if (heroInterval) clearInterval(heroInterval);
+    updateHero();
+    heroInterval = setInterval(updateHero, 30000);
 
     // Re-run arrow visibility now that rows are populated
     document.querySelectorAll(".row-container").forEach(function (container) {
