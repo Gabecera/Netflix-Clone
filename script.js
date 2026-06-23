@@ -175,14 +175,18 @@ let isMuted = true;
 // =====================
 // Mute Button
 // =====================
-muteBtn.textContent = "🔇";
+function updateMuteIcon() {
+    document.getElementById("heroVolIcon").style.display  = isMuted ? "none" : "";
+    document.getElementById("heroMuteIcon").style.display = isMuted ? "" : "none";
+}
+updateMuteIcon();
 
 muteBtn.addEventListener("click", function () {
     isMuted = !isMuted;
     heroVideo.src = isMuted
         ? heroVideo.src.replace("mute=0", "mute=1")
         : heroVideo.src.replace("mute=1", "mute=0");
-    muteBtn.textContent = isMuted ? "🔇" : "🔊";
+    updateMuteIcon();
 });
 
 // =====================
@@ -251,7 +255,15 @@ document.addEventListener("wheel", function (e) {
 searchIcon.addEventListener("click", function () {
     searchInput.classList.toggle("hidden");
     searchInput.classList.toggle("visible");
-    if (searchInput.classList.contains("visible")) searchInput.focus();
+
+    if (searchInput.classList.contains("visible")) {
+        searchInput.focus();
+    } else {
+        // Closing the search box: clear the query and hide any leftover results
+        searchInput.value = "";
+        searchResultsSection.style.display = "none";
+        clearTimeout(searchTimeout);
+    }
 });
 
 const searchResultsSection = document.getElementById("searchResultsSection");
@@ -629,6 +641,11 @@ const heroVideoWrapperEl = document.querySelector(".hero-video-wrapper");
 const heroViews = ["home", "movies", "shows", "new-popular"];
 
 function setView(view) {
+    searchInput.value = "";
+    searchInput.classList.add("hidden");
+    searchInput.classList.remove("visible");
+    searchResultsSection.style.display = "none";
+
     // Show/hide sections
     contentSections.forEach(section => {
         const views = section.dataset.views.split(" ");
