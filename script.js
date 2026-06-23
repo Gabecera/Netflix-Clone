@@ -275,6 +275,7 @@ searchInput.addEventListener("input", function () {
 
     // Hide results and show normal rows if search is cleared
     if (!query) {
+        clearTimeout(searchTimeout);
         searchResultsSection.style.display = "none";
         return;
     }
