@@ -45,7 +45,7 @@
     </div>
     <div class="nav-right">
         <span id="searchIcon">🔍</span>
-        <input type="text" id="searchInput" placeholder="Search movies..." class="hidden">
+        <input type="text" id="searchInput" placeholder="Search movies..." class="hidden" maxlength="100">
         <span class="nav-kids">Kids</span>
         <span class="nav-bell">🔔</span>
         <div class="profile-menu">
@@ -64,7 +64,7 @@
                     <li>Account</li>
                     <li>Help Centre</li>
                     <hr class="profile-divider">
-                    <li class="sign-out">Sign out of Netflix</li>
+                    <li class="sign-out" onclick="window.location.href='/logout'">Sign out of Netflix</li>
                 </ul>
             </div>
         </div>

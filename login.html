@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix Clone — Sign In</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bg {
+            position: fixed;
+            inset: 0;
+            background: url('https://assets.nflxext.com/ffe/siteui/vlv3/9134db96-10d6-4a64-a619-a21da22f8999/a449fabb-05e4-4c8a-b062-b0bec7af916b/US-en-20240101-popsignuptwoweeks-perspective_alpha_website_large.jpg') center/cover no-repeat;
+            opacity: 0.5;
+            z-index: 0;
+        }
+
+        .bg-overlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(0,0,0,0.6) 0%,
+                rgba(0,0,0,0.2) 40%,
+                rgba(0,0,0,0.2) 60%,
+                rgba(0,0,0,0.8) 100%
+            );
+            z-index: 1;
+        }
+
+        nav {
+            position: relative;
+            z-index: 2;
+            padding: 24px 56px;
+        }
+
+        .logo {
+            color: #e50914;
+            font-size: 42px;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+
+        .card-wrap {
+            position: relative;
+            z-index: 2;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.75);
+            border-radius: 4px;
+            padding: 60px 68px 80px;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .card h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 28px;
+        }
+
+        .error-msg {
+            background: #e87c03;
+            border-radius: 4px;
+            padding: 12px 16px;
+            font-size: 14px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .error-msg.visible { display: block; }
+
+        .field {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .field input {
+            width: 100%;
+            background: #333;
+            border: 1px solid #333;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 16px;
+            padding: 16px 16px 6px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .field input:focus { border-color: #8c8c8c; }
+
+        .field label {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8c8c8c;
+            font-size: 16px;
+            pointer-events: none;
+            transition: top 0.15s, font-size 0.15s, color 0.15s;
+        }
+
+        .field input:focus + label,
+        .field input:not(:placeholder-shown) + label {
+            top: 10px;
+            font-size: 11px;
+            color: #8c8c8c;
+        }
+
+        /* Invisible placeholder so :not(:placeholder-shown) works */
+        .field input::placeholder { color: transparent; }
+
+        .submit-btn {
+            width: 100%;
+            background: #e50914;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 700;
+            padding: 16px;
+            margin-top: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .submit-btn:hover { background: #f40612; }
+        .submit-btn:active { background: #c40812; }
+    </style>
+</head>
+<body>
+    <div class="bg"></div>
+    <div class="bg-overlay"></div>
+
+    <nav>
+        <div class="logo">NETFLIX</div>
+    </nav>
+
+    <div class="card-wrap">
+        <div class="card">
+            <h1>Sign In</h1>
+
+            <div class="error-msg" id="errorMsg"></div>
+
+            <form id="loginForm" method="POST" action="/login">
+                <div class="field">
+                    <input type="text" id="username" name="username"
+                           placeholder=" " maxlength="64" autocomplete="username" required>
+                    <label for="username">Username</label>
+                </div>
+                <div class="field">
+                    <input type="password" id="password" name="password"
+                           placeholder=" " maxlength="128" autocomplete="current-password" required>
+                    <label for="password">Password</label>
+                </div>
+                <button type="submit" class="submit-btn">Sign In</button>
+            </form>
+
+            <div style="margin-top: 16px; text-align: center; color: #8c8c8c; font-size: 13px;">or</div>
+
+            <a href="/guest" style="
+                display: block;
+                margin-top: 16px;
+                width: 100%;
+                background: transparent;
+                color: #fff;
+                border: 1px solid #8c8c8c;
+                border-radius: 4px;
+                font-size: 16px;
+                font-weight: 500;
+                padding: 14px;
+                text-align: center;
+                text-decoration: none;
+                transition: border-color 0.2s, color 0.2s;
+            " onmouseover="this.style.borderColor='#fff'" onmouseout="this.style.borderColor='#8c8c8c'">
+                Continue as Guest
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Show error from query string (?error=1) without exposing details
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("error")) {
+            const msg = document.getElementById("errorMsg");
+            msg.textContent = "Incorrect username or password.";
+            msg.classList.add("visible");
+        }
+    </script>
+</body>
+</html>

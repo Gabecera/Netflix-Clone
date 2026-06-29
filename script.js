@@ -1,15 +1,19 @@
 // =====================
-// OMDb API
+// TMDB Proxy
 // =====================
-const TMDB_KEY = "d0b65271e62e6564bb47999d30242931";
 const tmdbCache = {};
 const heroPoster = document.getElementById("heroPoster");
-// Cache so each movie is only fetched once (protects the 1,000/day limit)
 const omdbCache = {};
-// check TMDB API 
+
+// All TMDB requests go through the server-side proxy — key never touches the client
+async function tmdbFetch(endpoint) {
+    const res = await fetch(`/api/tmdb?endpoint=${encodeURIComponent(endpoint)}`);
+    if (!res.ok) throw new Error(`Proxy error ${res.status}`);
+    return res.json();
+}
+
 async function fetchTMDBRow(endpoint) {
-    const res = await fetch(`https://api.themoviedb.org/3${endpoint}&api_key=${TMDB_KEY}`);
-    const data = await res.json();
+    const data = await tmdbFetch(endpoint);
     return data.results || [];
 }
 // check OMDB API for movie details (plot, rating, genres)
@@ -20,39 +24,34 @@ async function fetchMovieData(title, tmdbId = null) {
     try {
         let id = tmdbId;
 
-        // If no TMDB ID, search for it by title
+        let mediaType2 = "movie"; // default
+
         if (!id) {
-            const searchRes = await fetch(`https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(title)}&api_key=${TMDB_KEY}`);
-            const searchData = await searchRes.json();
+            // No ID — search to get both the ID and media type in one call
+            const searchData = await tmdbFetch(`/search/multi?query=${encodeURIComponent(title)}`);
             const result = searchData.results?.[0];
             if (!result) return null;
             id = result.id;
+            mediaType2 = result.media_type || "movie";
         }
+        // When tmdbId is already known, skip the search entirely —
+        // try movie first, fall back to TV if TMDB returns "not found"
 
-        // Try movie first, then TV
-        // Determine media type from search instead of guessing
-        const typeRes = await fetch(`https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(title)}&api_key=${TMDB_KEY}`);
-        const typeData = await typeRes.json();
-        const mediaType2 = typeData.results?.[0]?.media_type || "movie";
-
-        let detailsRes = await fetch(`https://api.themoviedb.org/3/${mediaType2}/${id}?api_key=${TMDB_KEY}`);
-        let details = await detailsRes.json();
+        let details = await tmdbFetch(`/${mediaType2}/${id}`);
 
         // fallback just in case
         if (details.status_code === 34) {
             const fallback = mediaType2 === "movie" ? "tv" : "movie";
-            detailsRes = await fetch(`https://api.themoviedb.org/3/${fallback}/${id}?api_key=${TMDB_KEY}`);
-            details = await detailsRes.json();
+            details = await tmdbFetch(`/${fallback}/${id}`);
+            mediaType2 = fallback;
         }
 
         // Fetch trailer
-        // Try movie videos first, then TV videos
         let trailer = null;
 
-// use the correct endpoint based on media type
+        // use the correct endpoint based on media type
         const mediaType = details.first_air_date ? "tv" : "movie";
-        const videoRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${id}/videos?api_key=${TMDB_KEY}`);
-        const videoData = await videoRes.json();
+        const videoData = await tmdbFetch(`/${mediaType}/${id}/videos`);
         trailer = videoData.results?.find(v => v.type === "Trailer" && v.site === "YouTube");
 
         const parsed = {
@@ -285,10 +284,11 @@ searchInput.addEventListener("input", function () {
     searchTimeout = setTimeout(() => runSearch(query), 400);
 });
 async function runSearch(query) {
-    const res = await fetch(
-        `https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(query)}&api_key=${TMDB_KEY}`
-    );
-    const data = await res.json();
+    // Client-side guard: strip non-printable chars and enforce length
+    query = query.replace(/[^\x20-\x7E]/g, "").trim();
+    if (!query || query.length > 100) return;
+
+    const data = await tmdbFetch(`/search/multi?query=${encodeURIComponent(query)}`);
 
     // Filter to only results that have a poster
     const results = (data.results || []).filter(r => r.poster_path);
@@ -469,6 +469,13 @@ async function setupMovieWrapper(wrapper) {
     const data = await fetchMovieData(img.alt, tmdbId); // 👈 pass it in
     if (data) buildHoverCard(wrapper, img, data);
 
+    // Always set expand direction regardless of whether a trailer exists
+    wrapper.addEventListener("mouseenter", function () {
+        const rect = wrapper.getBoundingClientRect();
+        const middle = rect.left + rect.width / 2;
+        wrapper.style.transformOrigin = middle < window.innerWidth / 2 ? "left center" : "right center";
+    });
+
     const trailer = data?.trailer; // 👈 now comes from fetchMovieData, not the hardcoded map
     if (trailer) {
         const container = document.createElement("div");
@@ -482,11 +489,6 @@ async function setupMovieWrapper(wrapper) {
         wrapper.appendChild(container);
 
         wrapper.addEventListener("mouseenter", function () {
-            const rect = wrapper.getBoundingClientRect();
-            const middle = rect.left + rect.width / 2;
-            const origin = middle < window.innerWidth / 2 ? "left center" : "right center";
-            wrapper.style.transformOrigin = origin;
-
             heroVideo.style.display = "none";
 
             if (currentHeroBackdrop) {
