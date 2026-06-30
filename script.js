@@ -154,7 +154,7 @@ async function updateHero() {
 
     const trailerKey = data?.trailer;
     if (trailerKey) {
-        heroVideo.src = `https://www.youtube.com/embed/${trailerKey}?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&controls=0&fs=0&modestbranding=1&playlist=${trailerKey}`;
+        heroVideo.src = `https://www.youtube.com/embed/${trailerKey}?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&controls=0&fs=0&modestbranding=1&cc_load_policy=0&playlist=${trailerKey}`;
     }
 
     featuredIndex = (featuredIndex + 1) % featured.length;
@@ -485,6 +485,7 @@ async function setupMovieWrapper(wrapper) {
         const video = document.createElement("iframe");
         video.src = "";
         video.style.border = "none";
+        video.setAttribute("sandbox", "allow-scripts allow-same-origin allow-presentation");
         container.appendChild(video);
         wrapper.appendChild(container);
 
