@@ -191,7 +191,25 @@ muteBtn.addEventListener("click", function () {
 // =====================
 // My List
 // =====================
-const myList = JSON.parse(localStorage.getItem("myList")) || [];
+// Validate localStorage data before using it —
+// prevents malicious or malformed data from being rendered into the DOM
+function loadMyList() {
+    try {
+        const raw = JSON.parse(localStorage.getItem("myList"));
+        if (!Array.isArray(raw)) return [];
+        return raw.filter(item =>
+            item &&
+            typeof item.src === "string" &&
+            item.src.startsWith("https://image.tmdb.org/") &&  // only real TMDB image URLs
+            typeof item.alt === "string" &&
+            item.alt.length > 0 &&
+            item.alt.length <= 200
+        );
+    } catch {
+        return [];
+    }
+}
+const myList = loadMyList();
 
 function renderMyList() {
     myListRow.innerHTML = "";
