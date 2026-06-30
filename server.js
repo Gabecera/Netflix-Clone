@@ -28,6 +28,30 @@ if (!SESSION_SECRET) {
 }
 
 // =====================
+// Security headers
+// =====================
+app.use((req, res, next) => {
+    res.setHeader("Content-Security-Policy", [
+        "default-src 'self'",
+        // External scripts: YouTube IFrame API only
+        "script-src 'self' https://www.youtube.com https://s.ytimg.com",
+        // Inline styles are used throughout the HTML — allow them
+        "style-src 'self' 'unsafe-inline'",
+        // Images: own server + TMDB posters + Netflix login background
+        "img-src 'self' https://image.tmdb.org https://assets.nflxext.com",
+        // Iframes: YouTube trailers only
+        "frame-src https://www.youtube.com",
+        // API calls: own proxy only — TMDB key never leaves the server
+        "connect-src 'self'",
+        // Block plugins (Flash etc.) entirely
+        "object-src 'none'",
+        // Prevent base tag hijacking
+        "base-uri 'self'"
+    ].join("; "));
+    next();
+});
+
+// =====================
 // Middleware
 // =====================
 app.use(express.urlencoded({ extended: false }));
