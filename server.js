@@ -4,9 +4,14 @@ const session = require("express-session");
 const bcrypt = require("bcryptjs");
 const rateLimit = require("express-rate-limit");
 const path = require("path");
+const fs = require("fs");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// The React app is built by Vite into dist/ — that folder, and nothing else,
+// is what gets served to the browser.
+const DIST = path.join(__dirname, "dist");
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
 const APP_USERNAME = process.env.APP_USERNAME;
 const PASSWORD_HASH = process.env.PASSWORD_HASH;
@@ -25,6 +30,10 @@ if (!APP_USERNAME || !PASSWORD_HASH) {
 if (!SESSION_SECRET) {
     console.error("ERROR: SESSION_SECRET is not set in .env.");
     process.exit(1);
+}
+if (!fs.existsSync(DIST)) {
+    console.warn("WARNING: dist/ not found — run `npm run build` before serving in production.");
+    console.warn("         (In development, `npm run dev` serves the app from Vite on :5173.)");
 }
 
 // =====================
@@ -119,7 +128,7 @@ function requireFullAuth(req, res, next) {
 // =====================
 app.get("/login", (req, res) => {
     if (req.session && req.session.authenticated) return res.redirect("/");
-    res.sendFile(path.join(__dirname, "login.html"));
+    res.sendFile(path.join(DIST, "login.html"));
 });
 
 app.post("/login", loginLimiter, async (req, res) => {
@@ -158,7 +167,9 @@ app.get("/guest", (req, res) => {
 // =====================
 // Protected static files
 // =====================
-app.use(requireAuth, express.static(__dirname, {
+// Only the build output is exposed — server.js, .env and node_modules are no
+// longer reachable over HTTP the way they were when the repo root was served.
+app.use(requireAuth, express.static(DIST, {
     index: "index.html"
 }));
 

@@ -613,6 +613,7 @@ nav.scrolled {
     right: 15px;
     font-size: 28px;
     cursor: pointer;
+    z-index: 2; /* the trailer iframe overhangs the top of the modal and was swallowing this click */
 }
 .movie-wrapper:hover {
     transform: scale(1.8);
