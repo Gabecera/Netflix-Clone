@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { fetchRow, normalise, tmdbFetch } from "./api/tmdb";
 import { BrowseContext } from "./BrowseContext";
+import { t } from "./i18n";
 import Footer from "./components/Footer";
 import Hero from "./components/Hero";
 import LanguagesView from "./components/LanguagesView";
@@ -63,9 +64,9 @@ export default function App() {
     // Search
     // =====================
     useEffect(() => {
-        // Strip non-printable characters and enforce the same length cap the
-        // server applies.
-        const cleaned = query.replace(/[^\x20-\x7E]/g, "").trim();
+        // Strip control/invisible characters (keeping Hangul and other
+        // non-ASCII letters) and enforce the same length cap the server applies.
+        const cleaned = query.replace(/\p{C}/gu, "").trim();
 
         clearTimeout(searchTimer.current);
         if (!cleaned || cleaned.length > 100) {
@@ -122,7 +123,7 @@ export default function App() {
 
             {results.length > 0 && (
                 <div id="searchResultsSection">
-                    <Row title="Search Results" items={results} />
+                    <Row title={t("row.searchResults")} items={results} />
                 </div>
             )}
 
@@ -137,11 +138,12 @@ export default function App() {
             {showMyList && (
                 <section className="content-section">
                     {myListItems.length > 0 ? (
-                        <Row title="My List" items={myListItems} showRemove />
+                        <Row title={t("row.myList")} items={myListItems} showRemove />
                     ) : (
                         <div style={{ padding: "40px 60px", color: "#aaa", fontSize: 16 }}>
-                            You haven't added anything yet. Hover over a title and click{" "}
-                            <strong>+ My List</strong> to save it here.
+                            {t("myList.emptyBefore")}
+                            <strong>{t("myList.add")}</strong>
+                            {t("myList.emptyAfter")}
                         </div>
                     )}
                 </section>
@@ -150,7 +152,7 @@ export default function App() {
             {visibleRows.map((config) => (
                 <section className="content-section" key={config.id}>
                     <Row
-                        title={config.title}
+                        title={t(config.titleKey)}
                         items={rows[config.id] || []}
                         loading={!rows[config.id]}
                     />
@@ -160,11 +162,8 @@ export default function App() {
             {view === "games" && (
                 <section className="content-section">
                     <div className="placeholder-view">
-                        <h2>Games</h2>
-                        <p>
-                            Netflix Games is available on mobile. Download the Netflix app to
-                            play.
-                        </p>
+                        <h2>{t("games.title")}</h2>
+                        <p>{t("games.desc")}</p>
                     </div>
                 </section>
             )}

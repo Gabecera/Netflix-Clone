@@ -1,3 +1,4 @@
+import { lang, t, tmdbLang } from "../i18n";
 import { mapGenres } from "./genres";
 
 // =====================
@@ -21,7 +22,15 @@ function goToLogin() {
     window.location.href = "/login";
 }
 
-export async function tmdbFetch(endpoint) {
+// Every request carries the chosen UI language; a language= already in the
+// endpoint is replaced so callers can't drift out of sync with the toggle.
+function withLanguage(endpoint) {
+    const bare = endpoint.replace(/([?&])language=[^&]*&?/, "$1").replace(/[?&]$/, "");
+    return `${bare}${bare.includes("?") ? "&" : "?"}language=${tmdbLang}`;
+}
+
+export async function tmdbFetch(rawEndpoint) {
+    const endpoint = withLanguage(rawEndpoint);
     if (cache.has(endpoint)) return cache.get(endpoint);
     if (inflight.has(endpoint)) return inflight.get(endpoint);
 
@@ -70,7 +79,7 @@ export function normalise(result, fallbackType = "movie") {
         title: result.title || result.name || "Untitled",
         poster: `https://image.tmdb.org/t/p/w300${result.poster_path}`,
         backdrop: result.backdrop_path || result.poster_path || "",
-        overview: result.overview || "No description available.",
+        overview: result.overview || t("common.noDescription"),
         rating: Math.min(5, Math.max(1, Math.round((result.vote_average || 0) / 2))),
         genres: mapGenres(result.genre_ids, mediaType)
     };
@@ -101,9 +110,15 @@ const FALLBACK_TRAILERS = {
     "Dune Part 2": "Way9Dexny3w"
 };
 
+// Most titles have no trailer in Korean, so English (and language-less)
+// videos are always included, preferring one in the UI language when present.
+// The commas are pre-encoded because the proxy's character allowlist rejects ",".
 async function findTrailerKey(mediaType, id) {
-    const data = await tmdbFetch(`/${mediaType}/${id}/videos`);
-    const trailer = data.results?.find((v) => v.type === "Trailer" && v.site === "YouTube");
+    const data = await tmdbFetch(
+        `/${mediaType}/${id}/videos?include_video_language=${lang}%2Cen%2Cnull`
+    );
+    const trailers = (data.results || []).filter((v) => v.type === "Trailer" && v.site === "YouTube");
+    const trailer = trailers.find((v) => v.iso_639_1 === lang) || trailers[0];
     return trailer?.key || null;
 }
 

@@ -223,8 +223,8 @@ app.get("/api/tmdb", requireAuth, limiter, async function (req, res) {
         return res.status(400).json({ error: "Missing endpoint parameter" });
     }
 
-    // Length cap — no legitimate TMDB endpoint exceeds 200 chars
-    if (endpoint.length > 200) {
+    // Length cap — a 100-char Korean search is ~900 chars once percent-encoded
+    if (endpoint.length > 1000) {
         return res.status(400).json({ error: "Endpoint too long" });
     }
 

@@ -1,3 +1,5 @@
+import { lang } from "../i18n";
+
 // TMDB's genre ids are stable, so mapping them locally lets a card show its
 // genres immediately instead of waiting on a details request per poster.
 const MOVIE_GENRES = {
@@ -41,7 +43,52 @@ const TV_GENRES = {
     37: "Western"
 };
 
+// TMDB's own Korean genre names.
+const MOVIE_GENRES_KO = {
+    28: "액션",
+    12: "모험",
+    16: "애니메이션",
+    35: "코미디",
+    80: "범죄",
+    99: "다큐멘터리",
+    18: "드라마",
+    10751: "가족",
+    14: "판타지",
+    36: "역사",
+    27: "공포",
+    10402: "음악",
+    9648: "미스터리",
+    10749: "로맨스",
+    878: "SF",
+    10770: "TV 영화",
+    53: "스릴러",
+    10752: "전쟁",
+    37: "서부"
+};
+
+const TV_GENRES_KO = {
+    10759: "액션 & 어드벤처",
+    16: "애니메이션",
+    35: "코미디",
+    80: "범죄",
+    99: "다큐멘터리",
+    18: "드라마",
+    10751: "가족",
+    10762: "키즈",
+    9648: "미스터리",
+    10763: "뉴스",
+    10764: "리얼리티",
+    10765: "SF & 판타지",
+    10766: "연속극",
+    10767: "토크",
+    10768: "전쟁 & 정치",
+    37: "서부"
+};
+
 export function mapGenres(ids = [], mediaType = "movie") {
-    const table = mediaType === "tv" ? TV_GENRES : MOVIE_GENRES;
+    const table =
+        lang === "ko"
+            ? mediaType === "tv" ? TV_GENRES_KO : MOVIE_GENRES_KO
+            : mediaType === "tv" ? TV_GENRES : MOVIE_GENRES;
     return ids.map((id) => table[id]).filter(Boolean);
 }
