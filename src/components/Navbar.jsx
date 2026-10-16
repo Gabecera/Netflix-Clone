@@ -1,14 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useClickOutside, useScrolled } from "../hooks/usePageEffects";
+import { lang, setLang, t } from "../i18n";
 
 const NAV_ITEMS = [
-    { view: "home", label: "Home" },
-    { view: "shows", label: "Shows" },
-    { view: "movies", label: "Movies" },
-    { view: "games", label: "Games" },
-    { view: "new-popular", label: "New & Popular" },
-    { view: "my-list", label: "My List" },
-    { view: "languages", label: "Browse by Languages" }
+    { view: "home", labelKey: "nav.home" },
+    { view: "shows", labelKey: "nav.shows" },
+    { view: "movies", labelKey: "nav.movies" },
+    { view: "games", labelKey: "nav.games" },
+    { view: "new-popular", labelKey: "nav.newPopular" },
+    { view: "my-list", labelKey: "nav.myList" },
+    { view: "languages", labelKey: "nav.languages" }
+];
+
+const LANG_OPTIONS = [
+    { code: "en", label: "EN" },
+    { code: "ko", label: "한국어" }
 ];
 
 export default function Navbar({ view, onViewChange, query, onQueryChange }) {
@@ -52,7 +58,7 @@ export default function Navbar({ view, onViewChange, query, onQueryChange }) {
                         selectView(item.view);
                     }}
                 >
-                    {item.label}
+                    {t(item.labelKey)}
                 </li>
             ))}
         </ul>
@@ -81,7 +87,7 @@ export default function Navbar({ view, onViewChange, query, onQueryChange }) {
                 }}
             >
                 <span>
-                    Browse <span className="dropdown-arrow">▼</span>
+                    {t("nav.browse")} <span className="dropdown-arrow">▼</span>
                 </span>
                 {navList(`dropdown-menu${browseOpen ? " open" : ""}`)}
             </div>
@@ -95,12 +101,28 @@ export default function Navbar({ view, onViewChange, query, onQueryChange }) {
                     id="searchInput"
                     ref={searchRef}
                     className={searchOpen ? "visible" : "hidden"}
-                    placeholder="Search movies..."
+                    placeholder={t("nav.searchPlaceholder")}
                     maxLength={100}
                     value={query}
                     onChange={(e) => onQueryChange(e.target.value)}
                 />
-                <span className="nav-kids">Kids</span>
+                <div className="lang-toggle" role="group" aria-label="Language">
+                    {LANG_OPTIONS.map((option) => (
+                        <button
+                            type="button"
+                            key={option.code}
+                            className={lang === option.code ? "active" : undefined}
+                            aria-pressed={lang === option.code}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setLang(option.code);
+                            }}
+                        >
+                            {option.label}
+                        </button>
+                    ))}
+                </div>
+                <span className="nav-kids">{t("nav.kids")}</span>
                 <span className="nav-bell">🔔</span>
 
                 <div className="profile-menu">
@@ -118,13 +140,13 @@ export default function Navbar({ view, onViewChange, query, onQueryChange }) {
                     <div className={`profile-dropdown${profileOpen ? " open" : ""}`}>
                         <div className="profile-dropdown-header">
                             <div className="profile-avatar-sm">G</div>
-                            <span>Guest</span>
+                            <span>{t("profile.guest")}</span>
                         </div>
                         <hr className="profile-divider" />
                         <ul className="profile-options">
-                            <li>Manage Profiles</li>
-                            <li>Account</li>
-                            <li>Help Centre</li>
+                            <li>{t("profile.manage")}</li>
+                            <li>{t("profile.account")}</li>
+                            <li>{t("profile.help")}</li>
                             <hr className="profile-divider" />
                             <li
                                 className="sign-out"
@@ -132,7 +154,7 @@ export default function Navbar({ view, onViewChange, query, onQueryChange }) {
                                     window.location.href = "/logout";
                                 }}
                             >
-                                Sign out of Netflix
+                                {t("profile.signOut")}
                             </li>
                         </ul>
                     </div>

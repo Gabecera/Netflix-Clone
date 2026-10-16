@@ -1,4 +1,5 @@
 import useRowArrows from "../hooks/useRowArrows";
+import { t } from "../i18n";
 import MovieCard from "./MovieCard";
 
 export default function Row({ title, items = [], loading = false, showRemove = false }) {
@@ -33,7 +34,7 @@ export default function Row({ title, items = [], loading = false, showRemove = f
                                 style={{ transform: `translateX(-${offset}px)` }}
                             >
                                 {loading && items.length === 0 ? (
-                                    <p style={{ padding: 20, color: "#aaa" }}>Loading…</p>
+                                    <p style={{ padding: 20, color: "#aaa" }}>{t("common.loading")}</p>
                                 ) : (
                                     items.map((item) => (
                                         <MovieCard

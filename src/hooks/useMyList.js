@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { t } from "../i18n";
 
 const STORAGE_KEY = "myList";
 
@@ -45,7 +46,7 @@ export function entryToItem(entry) {
         title: entry.alt,
         poster: entry.src,
         backdrop: entry.backdrop || "",
-        overview: entry.overview || "No description available.",
+        overview: entry.overview || t("common.noDescription"),
         rating: entry.rating || 3,
         genres: entry.genres || []
     };

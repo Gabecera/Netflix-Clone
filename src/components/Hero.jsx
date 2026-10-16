@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchTrailerKey, playerUrl } from "../api/tmdb";
+import { t } from "../i18n";
 
 const ROTATE_MS = 30000;
 const COLLAPSE_MS = 6000;
@@ -87,17 +88,17 @@ export default function Hero({ featured, cardHovered, visible, paused, onMoreInf
 
                 <div className="hero-buttons">
                     <button className="btn" onClick={play}>
-                        ▶ Play
+                        {t("hero.play")}
                     </button>
                     <button
                         className="btn btn-secondary"
                         onClick={() => current && onMoreInfo({ ...current, trailer })}
                     >
-                        More Info
+                        {t("hero.moreInfo")}
                     </button>
                 </div>
 
-                <button id="muteBtn" title="Mute/Unmute" onClick={() => setMuted((m) => !m)}>
+                <button id="muteBtn" title={t("hero.mute")} onClick={() => setMuted((m) => !m)}>
                     <svg
                         id="heroVolIcon"
                         viewBox="0 0 24 24"

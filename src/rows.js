@@ -5,43 +5,43 @@
 export const MOVIE_ROWS = [
     {
         id: "trending",
-        title: "Trending",
-        endpoint: "/trending/movie/week?language=en-US",
+        titleKey: "row.trending",
+        endpoint: "/trending/movie/week",
         type: "movie",
         views: ["home", "movies", "new-popular"]
     },
     {
         id: "action",
-        title: "Action",
+        titleKey: "row.action",
         endpoint: "/discover/movie?with_genres=28&sort_by=popularity.desc",
         type: "movie",
         views: ["home", "movies"]
     },
     {
         id: "comedy",
-        title: "Comedy",
+        titleKey: "row.comedy",
         endpoint: "/discover/movie?with_genres=35&sort_by=popularity.desc",
         type: "movie",
         views: ["home", "movies"]
     },
     {
         id: "scifi",
-        title: "Sci-Fi",
+        titleKey: "row.scifi",
         endpoint: "/discover/movie?with_genres=878&sort_by=popularity.desc",
         type: "movie",
         views: ["home", "movies"]
     },
     {
         id: "popular",
-        title: "Popular",
-        endpoint: "/movie/popular?language=en-US",
+        titleKey: "row.popular",
+        endpoint: "/movie/popular",
         type: "movie",
         views: ["home", "movies", "new-popular"]
     },
     {
         id: "newReleases",
-        title: "New Releases",
-        endpoint: "/movie/now_playing?language=en-US",
+        titleKey: "row.newReleases",
+        endpoint: "/movie/now_playing",
         type: "movie",
         views: ["home", "movies", "new-popular"]
     }
@@ -50,21 +50,21 @@ export const MOVIE_ROWS = [
 export const SHOW_ROWS = [
     {
         id: "popularShows",
-        title: "Popular Shows",
-        endpoint: "/tv/popular?language=en-US",
+        titleKey: "row.popularShows",
+        endpoint: "/tv/popular",
         type: "tv",
         views: ["shows"]
     },
     {
         id: "drama",
-        title: "Drama",
+        titleKey: "row.drama",
         endpoint: "/discover/tv?with_genres=18&sort_by=popularity.desc",
         type: "tv",
         views: ["shows"]
     },
     {
         id: "reality",
-        title: "Reality",
+        titleKey: "row.reality",
         endpoint: "/discover/tv?with_genres=10764&sort_by=popularity.desc",
         type: "tv",
         views: ["shows"]

@@ -1,3 +1,5 @@
+import { t } from "../i18n";
+
 export default function MoreInfoModal({ item, onClose }) {
     const open = Boolean(item);
 
@@ -31,7 +33,7 @@ export default function MoreInfoModal({ item, onClose }) {
                         }
                     }}
                 >
-                    Play
+                    {t("modal.play")}
                 </button>
             </div>
         </div>

@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { fetchTrailerKey, playerUrl } from "../api/tmdb";
 import { useBrowse } from "../BrowseContext";
+import { t } from "../i18n";
 
 export default function MovieCard({ item, showRemove = false }) {
     const { isInList, toggleMyList, removeFromList, setCardHovered } = useBrowse();
@@ -65,7 +66,7 @@ export default function MovieCard({ item, showRemove = false }) {
             {showRemove && (
                 <button
                     className="add-btn"
-                    title="Remove from My List"
+                    title={t("myList.remove")}
                     onClick={(e) => {
                         e.stopPropagation();
                         removeFromList(item.title);
@@ -99,7 +100,7 @@ export default function MovieCard({ item, showRemove = false }) {
                     ))}
                 </div>
                 <div className="hover-card-btns">
-                    <button className="hover-play-btn" title="Play" onClick={play}>
+                    <button className="hover-play-btn" title={t("card.play")} onClick={play}>
                         ▶
                     </button>
                     <button
@@ -109,7 +110,7 @@ export default function MovieCard({ item, showRemove = false }) {
                             toggleMyList(item);
                         }}
                     >
-                        {inList ? "✓ In My List" : "+ My List"}
+                        {inList ? t("myList.added") : t("myList.add")}
                     </button>
                 </div>
             </div>

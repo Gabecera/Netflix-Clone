@@ -1,16 +1,18 @@
+import { t } from "../i18n";
+
 const LINKS = [
-    "FAQ",
-    "Help Centre",
-    "Account",
-    "Media Centre",
-    "Investor Relations",
-    "Jobs",
-    "Ways to Watch",
-    "Terms of Use",
-    "Privacy",
-    "Cookie Preferences",
-    "Corporate Information",
-    "Contact Us"
+    "footer.faq",
+    "footer.help",
+    "footer.account",
+    "footer.media",
+    "footer.investors",
+    "footer.jobs",
+    "footer.waysToWatch",
+    "footer.terms",
+    "footer.privacy",
+    "footer.cookies",
+    "footer.corporate",
+    "footer.contact"
 ];
 
 export default function Footer() {
@@ -18,9 +20,9 @@ export default function Footer() {
         <footer>
             <div className="footer-logo">NETFLIX</div>
             <div className="footer-links">
-                {LINKS.map((label) => (
-                    <a href="#" key={label}>
-                        {label}
+                {LINKS.map((key) => (
+                    <a href="#" key={key}>
+                        {t(key)}
                     </a>
                 ))}
             </div>

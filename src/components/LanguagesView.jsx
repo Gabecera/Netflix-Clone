@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { fetchRow } from "../api/tmdb";
+import { t } from "../i18n";
 import Row from "./Row";
 
 const LANGUAGES = {
@@ -53,7 +54,7 @@ export default function LanguagesView({ visible }) {
     return (
         <section className="content-section" style={{ display: visible ? "block" : "none" }}>
             <div className="placeholder-view">
-                <h2>Browse by Language</h2>
+                <h2>{t("languages.title")}</h2>
                 <div className="language-grid">
                     {Object.keys(LANGUAGES).map((name) => (
                         <div
@@ -61,7 +62,7 @@ export default function LanguagesView({ visible }) {
                             className={`language-tag${active === name ? " active" : ""}`}
                             onClick={() => selectLanguage(name)}
                         >
-                            {name}
+                            {t(`lang.${name}`)}
                         </div>
                     ))}
                 </div>
@@ -70,10 +71,18 @@ export default function LanguagesView({ visible }) {
             {active && (
                 <div id="languageResults">
                     <section className="content-section-inner">
-                        <Row title={`${active} Movies`} items={movies} loading={loading} />
+                        <Row
+                            title={t("languages.movies", { lang: t(`lang.${active}`) })}
+                            items={movies}
+                            loading={loading}
+                        />
                     </section>
                     <section className="content-section-inner">
-                        <Row title={`${active} Shows`} items={shows} loading={loading} />
+                        <Row
+                            title={t("languages.shows", { lang: t(`lang.${active}`) })}
+                            items={shows}
+                            loading={loading}
+                        />
                     </section>
                 </div>
             )}
